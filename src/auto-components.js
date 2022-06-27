@@ -7,6 +7,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     'Ri:chatSettingsFill': typeof import('~icons/ri/chat-settings-fill')['default']
+    'Ri:settings2Fill': typeof import('~icons/ri/settings2-fill')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

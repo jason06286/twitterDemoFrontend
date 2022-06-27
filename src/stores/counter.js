@@ -1,16 +1,12 @@
-import { defineStore } from "pinia";
-
-export const useCounterStore = defineStore({
-  id: "counter",
-  state: () => ({
-    counter: 0,
-  }),
-  getters: {
-    doubleCount: (state) => state.counter * 2,
-  },
-  actions: {
-    increment() {
-      this.counter++;
-    },
-  },
+const useCounterStore = defineStore('home', () => {
+  const name = ref('John');
+  const setName = (nick) => {
+    name.value = nick;
+  };
+  return {
+    name,
+    setName,
+  };
 });
+
+export default useCounterStore;
