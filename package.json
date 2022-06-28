@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "pinia": "^2.0.14",
+    "vee-validate": "^4.5.11",
     "vue": "^3.2.37",
     "vue-router": "^4.0.16"
   },
@@ -27,6 +28,7 @@
     "eslint-plugin-vue": "^9.1.1",
     "postcss": "^8.4.14",
     "prettier": "^2.5.1",
+    "prettier-plugin-tailwindcss": "^0.1.11",
     "tailwindcss": "^3.1.4",
     "unplugin-auto-import": "^0.9.1",
     "unplugin-icons": "^0.14.5",

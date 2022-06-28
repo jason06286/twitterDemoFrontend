@@ -1,5 +1,5 @@
 <script setup>
-const str = ref("Welcome to auth page!!");
+const str = ref('Welcome to auth page!!');
 </script>
 <template lang="">
   <div>
