@@ -15,6 +15,7 @@ export const setToken = () => {
 baseRequest = axios.create({
   baseURL: `https://fast-tundra-64548.herokuapp.com/api/`,
 });
+export const apiGoogle = () => baseRequest.get('auth/google');
 
 export const apiCheckStatus = () => baseRequest.get('user/check');
 export const apiLogin = (user) => baseRequest.post('user/login', user);

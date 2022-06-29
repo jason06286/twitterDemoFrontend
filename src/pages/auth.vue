@@ -21,7 +21,7 @@ onMounted(() => {
   checkStatus();
 });
 </script>
-<template lang="">
+<template>
   <router-view></router-view>
 </template>
-<style lang=""></style>
+<style></style>

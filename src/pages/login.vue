@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, useField } from 'vee-validate';
 import { loginSchema } from '@/methods/validate';
-import { apiLogin } from '@/api/api';
+import { apiLogin, apiGoogle } from '@/api/api';
 
 const errorMessage = ref('');
 const isLoading = ref(false);
@@ -15,6 +15,16 @@ const { errors, handleSubmit } = useForm({
 
 const { value: email } = useField('email');
 const { value: password } = useField('password');
+
+const googleLogin = async () => {
+  try {
+    const res = await apiGoogle();
+    console.log('res :>> ', res);
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
+};
+
 const onSubmit = handleSubmit(async () => {
   isLoading.value = true;
   errorMessage.value = '';
@@ -60,6 +70,7 @@ const onSubmit = handleSubmit(async () => {
         <button
           type="button"
           class="flex w-full items-center justify-center gap-2 rounded-full border bg-white px-5 py-2 text-gray-800 transition-all duration-300 hover:bg-gray-200"
+          @click="googleLogin"
         >
           <span
             ><svg

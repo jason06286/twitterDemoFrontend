@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, useField } from 'vee-validate';
 import { registerSchema } from '@/methods/validate';
-import { apiRegister } from '@/api/api';
+import { apiRegister, apiGoogle } from '@/api/api';
 
 const errorMessage = ref('');
 const successMessage = ref('');
@@ -15,6 +15,15 @@ const { errors, handleSubmit } = useForm({
 const { value: email } = useField('email');
 const { value: name } = useField('name');
 const { value: password } = useField('password');
+
+const googleRegister = async () => {
+  try {
+    const res = await apiGoogle();
+    console.log('res :>> ', res);
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
+};
 
 const onSubmit = handleSubmit(async () => {
   isLoading.value = true;
@@ -61,6 +70,7 @@ const onSubmit = handleSubmit(async () => {
         <button
           type="button"
           class="flex w-full items-center justify-center gap-2 rounded-full border bg-white px-5 py-2 text-gray-800 transition-all duration-300 hover:bg-gray-200"
+          @click="googleRegister"
         >
           <span
             ><svg
