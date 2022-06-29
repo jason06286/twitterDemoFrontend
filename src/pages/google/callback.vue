@@ -6,14 +6,14 @@ const route = useRoute();
 const router = useRouter();
 const store = useUserStore();
 
-const { token, name, id, photo } = route.query;
+const { token, name, id, photo, isThirdPartyLogin } = route.query;
 
 console.log('route.query :>> ', route.query);
 
 const setData = () => {
   document.cookie = `twitterToken=${token}`;
   setToken();
-  const user = { name, id, photo };
+  const user = { name, id, photo, isThirdPartyLogin };
   store.setUser(user);
   console.log('store.user :>> ', store.user);
   router.push('/auth/posts');
