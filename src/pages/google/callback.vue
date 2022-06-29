@@ -6,9 +6,9 @@ const route = useRoute();
 const router = useRouter();
 const store = useUserStore();
 
-const { token, name, id, photo } = route.params;
+const { token, name, id, photo } = route.query;
 
-console.log('route.params :>> ', route.params);
+console.log('route.query :>> ', route.query);
 
 const setData = () => {
   document.cookie = `twitterToken=${token}`;

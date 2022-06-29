@@ -16,13 +16,8 @@ const { errors, handleSubmit } = useForm({
 const { value: email } = useField('email');
 const { value: password } = useField('password');
 
-const googleLogin = async () => {
-  try {
-    const res = await apiGoogle();
-    console.log('res :>> ', res);
-  } catch (error) {
-    console.log('error :>> ', error);
-  }
+const googleLogin = () => {
+  apiGoogle();
 };
 
 const onSubmit = handleSubmit(async () => {

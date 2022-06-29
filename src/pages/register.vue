@@ -16,13 +16,8 @@ const { value: email } = useField('email');
 const { value: name } = useField('name');
 const { value: password } = useField('password');
 
-const googleRegister = async () => {
-  try {
-    const res = await apiGoogle();
-    console.log('res :>> ', res);
-  } catch (error) {
-    console.log('error :>> ', error);
-  }
+const googleRegister = () => {
+  apiGoogle();
 };
 
 const onSubmit = handleSubmit(async () => {
