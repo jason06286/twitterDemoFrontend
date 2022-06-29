@@ -1,8 +1,12 @@
 <script setup>
 import { useForm, useField } from 'vee-validate';
 import { registerSchema } from '@/methods/validate';
+import { apiRegister } from '@/api/api';
 
 const errorMessage = ref('');
+const successMessage = ref('');
+const isLoading = ref(false);
+const isLook = ref(false);
 
 const { errors, handleSubmit } = useForm({
   validationSchema: registerSchema,
@@ -12,9 +16,22 @@ const { value: email } = useField('email');
 const { value: name } = useField('name');
 const { value: password } = useField('password');
 
-const isLook = ref(false);
-const onSubmit = handleSubmit(() => {
-  errorMessage.value = '此帳號已註冊過';
+const onSubmit = handleSubmit(async () => {
+  isLoading.value = true;
+  successMessage.value = '';
+  errorMessage.value = '';
+  try {
+    const user = {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+    };
+    const res = await apiRegister(user);
+    successMessage.value = res.data.data.message;
+  } catch (error) {
+    errorMessage.value = error.response.data.message;
+  }
+  isLoading.value = false;
 });
 </script>
 
@@ -40,7 +57,7 @@ const onSubmit = handleSubmit(() => {
         </svg>
       </div>
       <div class="w-full bg-[#181818] p-10 md:w-1/2">
-        <h2 class="mb-8 text-2xl font-bold text-gray-300">註冊 SIGN UP</h2>
+        <h2 class="mb-8 text-2xl font-bold text-slate-300">註冊 SIGN UP</h2>
         <button
           type="button"
           class="flex w-full items-center justify-center gap-2 rounded-full border bg-white px-5 py-2 text-gray-800 transition-all duration-300 hover:bg-gray-200"
@@ -84,6 +101,13 @@ const onSubmit = handleSubmit(() => {
         >
           <ri:error-warning-fill class="inline-block text-xl text-red-600" />
           <span class="ml-2 text-gray-300">{{ errorMessage }}</span>
+        </div>
+        <div
+          v-show="successMessage"
+          class="mb-4 flex items-center rounded border-l-4 border-green-500 bg-green-700 p-2"
+        >
+          <carbon:checkmark-filled class="mt-0.5 text-base" />
+          <span class="ml-2 text-gray-300">{{ successMessage }}</span>
         </div>
         <form @submit="onSubmit">
           <div class="mb-6">
@@ -189,12 +213,20 @@ const onSubmit = handleSubmit(() => {
             </label>
             <p class="mt-2 text-sm text-red-800">{{ errors.password }}</p>
           </div>
-          <button
-            type="submit"
-            class="w-full cursor-pointer rounded-full border border-gray-400 py-2 text-center text-blue-500 transition-all duration-300 hover:bg-blue-300/20"
-          >
-            註冊
-          </button>
+          <div class="group relative">
+            <div
+              class="- absolute -inset-0.5 rounded-full bg-gradient-to-r from-blue-600 to-pink-600 opacity-0 blur transition-all duration-300 group-hover:opacity-80"
+              :class="isLoading && 'animate-pulse '"
+            ></div>
+            <button
+              type="submit"
+              class="relative flex w-full cursor-pointer justify-center rounded-full border border-gray-400 bg-[#181818] py-2 text-blue-500 transition-all duration-300 group-hover:text-gray-300"
+              :disabled="isLoading"
+            >
+              <eos-icons:three-dots-loading v-if="isLoading" class="text-2xl" />
+              <span v-else> 註冊</span>
+            </button>
+          </div>
         </form>
         <div class="mt-4 text-center text-sm">
           <span class="mr-1 text-xs text-gray-400">已經有帳號了嗎?</span>

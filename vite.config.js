@@ -35,12 +35,7 @@ export default defineConfig({
         }),
       ],
     }),
-    Pages({
-      dirs: [
-        { dir: 'src/pages', baseRoute: '' },
-        { dir: 'src/pages/auth', baseRoute: 'auth' },
-      ],
-    }),
+    Pages(),
     Layouts(),
   ],
   resolve: {

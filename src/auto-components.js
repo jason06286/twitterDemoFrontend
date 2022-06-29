@@ -5,6 +5,7 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    'EosIcons:threeDotsLoading': typeof import('~icons/eos-icons/three-dots-loading')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     'Mdi:emailOutline': typeof import('~icons/mdi/email-outline')['default']
     'Ri:chatSettingsFill': typeof import('~icons/ri/chat-settings-fill')['default']
@@ -12,8 +13,6 @@ declare module '@vue/runtime-core' {
     'Ri:eyeCloseLine': typeof import('~icons/ri/eye-close-line')['default']
     'Ri:eyeLine': typeof import('~icons/ri/eye-line')['default']
     'Ri:lockPasswordLine': typeof import('~icons/ri/lock-password-line')['default']
-    'Ri:settings2Fill': typeof import('~icons/ri/settings2-fill')['default']
-    'Ri:user3Line': typeof import('~icons/ri/user3-line')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

@@ -1,8 +1,13 @@
 <script setup>
 import { useForm, useField } from 'vee-validate';
 import { loginSchema } from '@/methods/validate';
+import { apiLogin } from '@/api/api';
 
 const errorMessage = ref('');
+const isLoading = ref(false);
+const isLook = ref(false);
+
+const router = useRouter();
 
 const { errors, handleSubmit } = useForm({
   validationSchema: loginSchema,
@@ -10,11 +15,22 @@ const { errors, handleSubmit } = useForm({
 
 const { value: email } = useField('email');
 const { value: password } = useField('password');
-const isLook = ref(false);
-const onSubmit = handleSubmit(() => {
-  errorMessage.value = '此帳號已註冊過';
-  console.log('errors :>> ', errors.value);
-  console.log('123');
+const onSubmit = handleSubmit(async () => {
+  isLoading.value = true;
+  errorMessage.value = '';
+  try {
+    const user = {
+      email: email.value,
+      password: password.value,
+    };
+    const res = await apiLogin(user);
+    const { token } = res.data.data;
+    document.cookie = `twitterToken=${token}`;
+    router.push('/auth');
+  } catch (error) {
+    errorMessage.value = error.response.data.message;
+  }
+  isLoading.value = false;
 });
 </script>
 
@@ -40,7 +56,7 @@ const onSubmit = handleSubmit(() => {
         </svg>
       </div>
       <div class="w-full bg-[#181818] p-10 md:w-1/2">
-        <h2 class="mb-8 text-2xl font-bold text-gray-300">登入 LOG IN</h2>
+        <h2 class="mb-8 text-2xl font-bold text-slate-300">登入 LOG IN</h2>
         <button
           type="button"
           class="flex w-full items-center justify-center gap-2 rounded-full border bg-white px-5 py-2 text-gray-800 transition-all duration-300 hover:bg-gray-200"
@@ -160,12 +176,20 @@ const onSubmit = handleSubmit(() => {
             </label>
             <p class="mt-2 text-sm text-red-800">{{ errors.password }}</p>
           </div>
-          <button
-            type="submit"
-            class="w-full cursor-pointer rounded-full border border-gray-400 py-2 text-center text-blue-500 transition-all duration-300 hover:bg-blue-300/20"
-          >
-            登入
-          </button>
+          <div class="group relative">
+            <div
+              class="- absolute -inset-0.5 rounded-full bg-gradient-to-r from-blue-600 to-pink-600 opacity-0 blur transition-all duration-300 group-hover:opacity-80"
+              :class="isLoading && 'animate-pulse '"
+            ></div>
+            <button
+              type="submit"
+              class="relative flex w-full cursor-pointer justify-center rounded-full border border-gray-400 bg-[#181818] py-2 text-blue-500 transition-all duration-300 group-hover:text-gray-300"
+              :disabled="isLoading"
+            >
+              <eos-icons:three-dots-loading v-if="isLoading" class="text-2xl" />
+              <span v-else> 登入 </span>
+            </button>
+          </div>
         </form>
         <div class="mt-4 text-center text-sm">
           <span class="mr-1 text-xs text-gray-400">還沒有帳號嗎?</span>

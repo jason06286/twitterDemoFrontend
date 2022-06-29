@@ -16,6 +16,14 @@
         class="m-2 block border-2 border-white px-2 py-3"
         >Register</router-link
       >
+      <router-link to="/auth" class="m-2 block border-2 border-white px-2 py-3"
+        >Auth</router-link
+      >
+      <router-link
+        to="/auth/posts"
+        class="m-2 block border-2 border-white px-2 py-3"
+        >Posts</router-link
+      >
     </nav>
   </div>
 </template>
