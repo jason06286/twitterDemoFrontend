@@ -5,8 +5,14 @@ import { apiCheckStatus, setToken } from '@/api/api';
 const router = useRouter();
 const store = useUserStore();
 
-async function checkStatus() {
+const checkStatus = async () => {
   try {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)twitterToken\s*=\s*([^;]*).*$)|^.*$/,
+      '$1'
+    );
+
+    if (!token) return router.push('/login');
     setToken();
     const res = await apiCheckStatus();
     if (res.data.status === 'success') {
@@ -16,7 +22,7 @@ async function checkStatus() {
   } catch (error) {
     router.push('/login');
   }
-}
+};
 onMounted(() => {
   checkStatus();
 });

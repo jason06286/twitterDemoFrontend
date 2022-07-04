@@ -5,18 +5,33 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    'Carbon:checkmarkFilled': typeof import('~icons/carbon/checkmark-filled')['default']
+    'Bi:bellFill': typeof import('~icons/bi/bell-fill')['default']
+    'Carbon:userProfile': typeof import('~icons/carbon/user-profile')['default']
+    DroupDwonButton: typeof import('./components/molecules/DroupDwonButton.vue')['default']
     'EosIcons:threeDotsLoading': typeof import('~icons/eos-icons/three-dots-loading')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    'Ic:roundSearch': typeof import('~icons/ic/round-search')['default']
+    'Mdi:creditCardEdit': typeof import('~icons/mdi/credit-card-edit')['default']
     'Mdi:emailOutline': typeof import('~icons/mdi/email-outline')['default']
+    'Mdi:home': typeof import('~icons/mdi/home')['default']
+    'Mdi:logout': typeof import('~icons/mdi/logout')['default']
+    'Mdi:twitter': typeof import('~icons/mdi/twitter')['default']
+    Navbar: typeof import('./components/organisms/Navbar.vue')['default']
+    'Ph:userBold': typeof import('~icons/ph/user-bold')['default']
     'Ri:errorWarningFill': typeof import('~icons/ri/error-warning-fill')['default']
     'Ri:eyeCloseLine': typeof import('~icons/ri/eye-close-line')['default']
     'Ri:eyeLine': typeof import('~icons/ri/eye-line')['default']
     'Ri:lockPasswordLine': typeof import('~icons/ri/lock-password-line')['default']
-    'Ri:settings2Fill': typeof import('~icons/ri/settings2-fill')['default']
-    'Ri:user3Line': typeof import('~icons/ri/user3-line')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SearchInput: typeof import('./components/molecules/SearchInput.vue')['default']
+    'Teenyicons:bellOutline': typeof import('~icons/teenyicons/bell-outline')['default']
+    'Teenyicons:bellSolid': typeof import('~icons/teenyicons/bell-solid')['default']
+    'Teenyicons:homeOutline': typeof import('~icons/teenyicons/home-outline')['default']
+    'Teenyicons:homeSolid': typeof import('~icons/teenyicons/home-solid')['default']
+    'Teenyicons:logoutOutline': typeof import('~icons/teenyicons/logout-outline')['default']
+    'Teenyicons:userOutline': typeof import('~icons/teenyicons/user-outline')['default']
+    'Teenyicons:userSolid': typeof import('~icons/teenyicons/user-solid')['default']
   }
 }
 

@@ -12,7 +12,6 @@ import Layouts from 'vite-plugin-vue-layouts';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/twitterDemoFrontend/',
   plugins: [
     Vue(),
     Icons(),
