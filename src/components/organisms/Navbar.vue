@@ -25,13 +25,13 @@ const logout = () => {
     <router-link
       to="/posts"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts' && 'border-b-4 border-blue-800'"
+      :class="route.path === '/auth/posts' && 'border-b-4 text-teal-50'"
     >
       <template v-if="route.path !== '/auth/posts'">
         <teenyicons:home-outline class="absolute" />
       </template>
       <template v-else>
-        <teenyicons:home-solid class="absolute text-blue-800" />
+        <teenyicons:home-solid class="absolute text-teal-50" />
       </template>
       <span
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
@@ -41,13 +41,13 @@ const logout = () => {
     <router-link
       to="/"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts' && 'border-b-4 border-orange-800'"
+      :class="route.path === '/auth/follow' && 'border-b-4 border-teal-50'"
     >
-      <template v-if="route.path !== '/auth/posts'">
+      <template v-if="route.path !== '/auth/follow'">
         <teenyicons:bell-outline class="absolute" />
       </template>
       <template v-else>
-        <teenyicons:bell-solid class="absolute text-orange-800" />
+        <teenyicons:bell-solid class="absolute text-teal-50" />
       </template>
       <span
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
@@ -57,13 +57,13 @@ const logout = () => {
     <router-link
       to="/"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts' && 'border-b-4  border-stone-500'"
+      :class="route.path === '/auth/profile' && 'border-b-4  border-teal-50'"
     >
-      <template v-if="route.path !== '/auth/posts'">
+      <template v-if="route.path !== '/auth/profile'">
         <teenyicons:user-outline class="absolute" />
       </template>
       <template v-else>
-        <teenyicons:user-solid class="absolute text-stone-500" />
+        <teenyicons:user-solid class="absolute text-teal-50" />
       </template>
       <span
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"

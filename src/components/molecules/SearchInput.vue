@@ -38,13 +38,13 @@ const isOpen = ref(false);
         id="search"
         v-model="searchWord"
         type="text"
-        placeholder="搜尋"
+        placeholder="搜尋使用者..."
         class="ml-2 shrink border-none bg-transparent text-sm focus:outline-none"
         @focus="isOpen = true"
       />
       <button
         type="button"
-        class="flex h-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-1 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700 sm:px-2"
+        class="ml-1 flex h-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-1 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700 sm:px-2"
       >
         <span class="ml-1 hidden sm:block">搜尋</span>
         <ic:round-search class="ml-1 align-middle text-base" />
