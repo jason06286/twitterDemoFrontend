@@ -5,6 +5,7 @@ import { apiGetPosts } from '@/api/api';
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
+
 const posts = ref([]);
 
 const isShowFollowingModal = ref(false);

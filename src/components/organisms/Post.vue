@@ -18,6 +18,7 @@ const followStore = useFollowStore();
 const { likes, getLikes, toggleLikes } = like();
 
 const commentDom = null;
+const imgModal = ref();
 
 const openComment = ref(false);
 const comments = ref([]);
@@ -28,6 +29,16 @@ const isShowLikeModal = ref(false);
 const isLike = computed(() => {
   const filter = likes.value.filter((item) => item._id === userStore.user.id);
   return filter.length;
+});
+
+const imagesClass = computed(() => {
+  if (props.post.images.length === 1) {
+    return 'grid-cols-1 grid-rows-1';
+  }
+  if (props.post.images.length === 2) {
+    return 'grid-cols-2 ';
+  }
+  return 'grid-cols-2 grid-rows-2';
 });
 
 watchEffect(() => {
@@ -82,13 +93,19 @@ onMounted(async () => {
       <div class="mb-5">
         {{ props.post.content }}
       </div>
-      <div class="mb-5">
-        <img
-          v-for="image in props.post.images"
-          :key="image"
-          :src="image"
-          alt="post"
-        />
+      <div v-if="props.post.images.length" class="mb-5">
+        <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
+          <div
+            v-for="(image, i) in props.post.images"
+            :key="image"
+            :style="{ backgroundImage: 'url(' + image + ')' }"
+            class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
+            :class="
+              props.post.images.length >= 3 ? 'odd:row-span-2' : 'odd:row-auto'
+            "
+            @click="imgModal.showImg(i)"
+          ></div>
+        </div>
       </div>
       <div class="mb-3 flex gap-2">
         <div v-if="!likes.length" class="flex items-center text-gray-500">
@@ -230,5 +247,10 @@ onMounted(async () => {
       </div>
     </template>
   </Modal>
+  <ImageModal
+    v-if="props.post.images.length"
+    ref="imgModal"
+    :images="props.post.images"
+  />
 </template>
 <style></style>

@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     'EosIcons:threeDotsLoading': typeof import('~icons/eos-icons/three-dots-loading')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     'Ic:roundSearch': typeof import('~icons/ic/round-search')['default']
+    ImageModal: typeof import('./components/organisms/ImageModal.vue')['default']
     'Mdi:creditCardEdit': typeof import('~icons/mdi/credit-card-edit')['default']
     'Mdi:logout': typeof import('~icons/mdi/logout')['default']
     'Mdi:twitter': typeof import('~icons/mdi/twitter')['default']
