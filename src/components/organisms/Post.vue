@@ -1,15 +1,65 @@
 <script setup>
-import { formatTime } from '@/methods/formatTime';
+import useUserStore from '@/stores/user';
+import useFollowStore from '@/stores/follow';
 
-defineProps({
+import { formatTime } from '@/methods/formatTime';
+import { apiGetComments, apiPostComment } from '@/api/api';
+import like from '@/methods/like';
+
+const props = defineProps({
   post: {
     type: Object,
     required: true,
   },
 });
+const userStore = useUserStore();
+const followStore = useFollowStore();
+
+const { likes, getLikes, toggleLikes } = like();
 
 const commentDom = null;
+
 const openComment = ref(false);
+const comments = ref([]);
+const content = ref('');
+const isLoading = ref(false);
+const isShowLikeModal = ref(false);
+
+const isLike = computed(() => {
+  const filter = likes.value.filter((item) => item._id === userStore.user.id);
+  return filter.length;
+});
+
+watchEffect(() => {
+  comments.value = props.post.comments;
+  likes.value = props.post.likes;
+});
+
+const postComment = async (id) => {
+  try {
+    isLoading.value = true;
+    await apiPostComment(id, { content: content.value });
+    const res = await apiGetComments(id);
+    comments.value = res.data.data;
+    isLoading.value = false;
+    openComment.value = true;
+    content.value = '';
+  } catch (error) {
+    console.log(error);
+  }
+};
+const judgeFollowing = (id) => {
+  const filter = followStore.following.filter((item) => item.user._id === id);
+  return filter.length;
+};
+
+onMounted(async () => {
+  try {
+    await getLikes(props.post._id);
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 <template>
   <div class="mb-5 rounded-md bg-black px-5 py-3 text-gray-400">
@@ -18,40 +68,42 @@ const openComment = ref(false);
         <img :src="post.user.photo" alt="avatar" />
       </div>
       <div class="ml-2">
-        <h2 class="font-bold md:text-xl">{{ post.user.name }}</h2>
-        <p class="text-sm text-gray-500">{{ formatTime(post.createdAt) }}</p>
+        <router-link
+          class="font-bold hover:text-blue-400 md:text-xl"
+          :to="`/auth/posts/${props.post.user._id}`"
+          >{{ props.post.user.name }}</router-link
+        >
+        <p class="text-sm text-gray-500">
+          {{ formatTime(props.post.createdAt) }}
+        </p>
       </div>
     </div>
     <div class="border-b border-gray-700 pb-2">
       <div class="mb-5">
-        {{ post.content }}
+        {{ props.post.content }}
       </div>
       <div class="mb-5">
         <img
-          v-for="image in post.images"
+          v-for="image in props.post.images"
           :key="image"
           :src="image"
           alt="post"
         />
       </div>
       <div class="mb-3 flex gap-2">
-        <div v-if="!post.likes.length" class="flex items-center text-gray-500">
+        <div v-if="!likes.length" class="flex items-center text-gray-500">
           <ri:heart-3-line class="mr-1" />
           <p>成為第一個喜歡的朋友</p>
         </div>
         <div
           v-else
           class="group flex cursor-pointer items-center text-gray-400"
+          @click="isShowLikeModal = true"
         >
           <ri:heart-3-fill class="mr-1 text-red-600" />
-          <p class="group-hover:text-blue-500">
-            {{ post.likes.length }} 個人喜歡
-          </p>
+          <p class="group-hover:text-blue-500">{{ likes.length }} 個人喜歡</p>
         </div>
-        <div
-          v-if="!post.comments.length"
-          class="flex items-center text-gray-500"
-        >
+        <div v-if="!comments.length" class="flex items-center text-gray-500">
           <ri:chat-1-line class="mr-1" />
           <p>尚無留言</p>
         </div>
@@ -61,17 +113,22 @@ const openComment = ref(false);
           @click="openComment = !openComment"
         >
           <ri:chat-1-fill class="mr-1 text-blue-500" />
-          <p class="group-hover:text-blue-500">
-            {{ post.comments.length }} 則留言
-          </p>
+          <p class="group-hover:text-blue-500">{{ comments.length }} 則留言</p>
         </div>
       </div>
     </div>
     <div class="grid grid-cols-3 border-b border-gray-700">
       <div
         class="flex cursor-pointer items-center justify-center border-r border-gray-700 py-3 transition-all duration-200 hover:bg-red-500/30 hover:text-pink-300"
+        :class="isLike && 'text-red-800'"
+        @click="toggleLikes(props.post._id)"
       >
-        <ri:heart-3-line class="mr-1" />
+        <template v-if="isLike">
+          <ri:heart-3-fill class="mr-1" />
+        </template>
+        <template v-else>
+          <ri:heart-3-line class="mr-1" />
+        </template>
         喜歡
       </div>
       <div
@@ -89,7 +146,7 @@ const openComment = ref(false);
       </div>
     </div>
     <div v-if="openComment" class="my-3">
-      <div v-for="comment in post.comments" :key="comment._id" class="flex">
+      <div v-for="comment in comments" :key="comment._id" class="mb-3 flex">
         <div class="mr-3 h-8 w-8 overflow-hidden rounded-full">
           <img :src="comment.commenter.photo" alt="avatar" />
         </div>
@@ -97,7 +154,7 @@ const openComment = ref(false);
           <div class="flex justify-between">
             <h3 class="mr-3 font-bold">{{ comment.commenter.name }}</h3>
             <p class="text-sm text-gray-600">
-              {{ formatTime(comment.createAt) }}
+              {{ formatTime(comment.createdAt) }}
             </p>
           </div>
           <p>{{ comment.content }}</p>
@@ -109,20 +166,69 @@ const openComment = ref(false);
         <img src="https://i.imgur.com/eInPDId.png" alt="avatar" />
       </div>
       <label class="flex w-full rounded-full bg-blue-900/50 py-1">
+        <div v-if="isLoading" class="ml-5 mt-1 flex shrink grow">
+          <p>留言</p>
+          <eos-icons:three-dots-loading class="text-2xl text-blue-300" />
+        </div>
         <input
+          v-else
           ref="commentDom"
+          v-model.trim="content"
           type="text"
           class="ml-3 mr-auto shrink grow border-none bg-transparent py-0.5 focus:outline-none"
           placeholder="留言..."
+          @keyup.enter="postComment(props.post._id)"
         />
         <button
           type="button"
-          class="mx-1 flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-2 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700"
+          class="mx-1 flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-3 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700"
+          :disabled="isLoading"
+          @click="postComment(props.post._id)"
         >
           <span>留言</span>
         </button>
       </label>
     </div>
   </div>
+  <Modal v-model="isShowLikeModal">
+    <template #title>喜歡的用戶</template>
+    <div
+      v-if="!likes.length"
+      class="flex h-full w-[300px] items-center justify-center text-sm"
+    >
+      還沒有任何人喜歡
+    </div>
+    <template v-else>
+      <div
+        v-for="item in likes"
+        :key="item._id"
+        class="mb-3 flex w-[300px] items-center"
+      >
+        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
+          <img :src="item.photo" alt="avatar" />
+        </div>
+        <router-link class="font-bold" :to="`/auth/posts/${item._id}`">{{
+          item.name
+        }}</router-link>
+        <button
+          v-if="judgeFollowing(item._id)"
+          type="button"
+          class="ml-auto rounded-md bg-red-900 py-2 px-2 text-sm hover:text-red-300"
+          @click="followStore.toggleFollow(item._id)"
+        >
+          <span>取消追蹤</span>
+        </button>
+        <button
+          v-else
+          type="button"
+          class="ml-auto rounded-md bg-red-900 py-2 px-2 text-sm hover:text-red-300"
+          :class="userStore.user.id === item._id && 'hidden'"
+          @click="followStore.toggleFollow(item._id)"
+        >
+          <span>追蹤</span>
+        </button>
+      </div>
+    </template>
+  </Modal>
 </template>
 <style></style>

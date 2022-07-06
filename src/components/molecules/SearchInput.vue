@@ -2,7 +2,10 @@
 import { apiGetUsers } from '@/api/api';
 
 const router = useRouter();
+
 const searchWord = ref('');
+const users = ref([]);
+
 const filterUsers = computed(() => {
   if (!searchWord.value) {
     return [];
@@ -10,7 +13,6 @@ const filterUsers = computed(() => {
   return users.value.filter((user) => user.name.includes(searchWord.value));
 });
 
-const users = ref([]);
 const goSearching = (id = '') => {
   if (!id) return;
   router.push(`/auth/post/${id}`);

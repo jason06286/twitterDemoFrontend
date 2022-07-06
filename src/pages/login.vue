@@ -3,11 +3,11 @@ import { useForm, useField } from 'vee-validate';
 import { loginSchema } from '@/methods/validate';
 import { apiLogin, apiGoogle } from '@/api/api';
 
+const router = useRouter();
+
 const errorMessage = ref('');
 const isLoading = ref(false);
 const isLook = ref(false);
-
-const router = useRouter();
 
 const { errors, handleSubmit } = useForm({
   validationSchema: loginSchema,

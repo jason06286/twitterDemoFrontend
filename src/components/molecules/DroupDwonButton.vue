@@ -22,18 +22,18 @@ const logout = () => {
       <span class="ml-2">{{ store.user.name }}</span>
     </button>
     <div
-      class="absolute bottom-0 right-0 w-36 translate-y-full overflow-hidden bg-black shadow-md shadow-slate-600 transition-all duration-500"
+      class="absolute bottom-0 right-0 z-10 w-36 translate-y-full overflow-hidden bg-black shadow-md shadow-slate-600 transition-all duration-500"
       :class="active ? 'h-[148px]' : 'h-0'"
     >
       <router-link
-        to="/"
+        to="/auth/follow"
         class="flex items-center gap-1 border-b border-gray-500 py-2 px-3 text-sm text-gray-400 transition-all duration-200 last:border-b-0 hover:bg-blue-300/20"
       >
         <bi:bell-fill />
         <span>追蹤名單</span>
       </router-link>
       <router-link
-        to="/"
+        :to="`/auth/posts/${store.user.id}`"
         class="flex items-center gap-1 border-b border-gray-500 py-2 px-3 text-sm text-gray-400 transition-all duration-200 last:border-b-0 hover:bg-blue-300/20"
       >
         <carbon:user-profile />

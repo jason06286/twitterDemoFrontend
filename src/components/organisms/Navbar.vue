@@ -1,11 +1,12 @@
 <script setup>
 const route = useRoute();
+
 const logout = () => {
   document.cookie = 'twitterToken=;';
 };
 </script>
 <template>
-  <nav class="fixed left-0 right-0 top-0 hidden bg-black py-1 sm:block">
+  <nav class="fixed left-0 right-0 top-0 z-10 hidden bg-black py-1 sm:block">
     <div
       class="container m-auto flex items-center justify-between px-1 sm:px-0"
     >

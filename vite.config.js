@@ -23,6 +23,12 @@ export default defineConfig({
         globalsPropValue: true,
         filepath: 'src/eslintrc-auto-imports.json',
       },
+      include: [
+        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/,
+        /\.vue\?vue/, // .vue
+        /\.md$/, // .md
+      ],
       dts: 'src/auto-imports.js',
     }),
     Components({
