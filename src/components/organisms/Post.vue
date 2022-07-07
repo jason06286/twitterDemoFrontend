@@ -219,7 +219,7 @@ onMounted(async () => {
     </div>
     <div class="mt-3 flex items-center">
       <div class="mr-2 h-9 w-9 overflow-hidden rounded-full">
-        <img src="https://i.imgur.com/eInPDId.png" alt="avatar" />
+        <img :src="userStore.user.photo" alt="avatar" />
       </div>
       <label class="flex w-full rounded-full bg-blue-900/50 py-1">
         <div v-if="isLoading" class="ml-5 mt-1 flex shrink grow">

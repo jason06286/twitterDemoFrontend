@@ -1,9 +1,12 @@
 <script setup>
+import useUserStore from '@/stores/user';
 import { apiAddPost } from '@/api/api';
 import { VueFinalModal, $vfm } from 'vue-final-modal';
 import useImage from '@/methods/useImage';
 
 const emit = defineEmits(['publish']);
+
+const userStore = useUserStore();
 const { fileInput, images, errormsg, uploadFile, deleteImage } = useImage();
 
 const isShowCancelModal = ref(false);
@@ -68,7 +71,7 @@ onUnmounted(() => {
     </button>
     <div class="flex w-[300px] p-1 sm:w-[500px]">
       <div class="mr-2 h-12 w-12 overflow-hidden rounded-full">
-        <img src="https://i.imgur.com/eInPDId.png" alt="avator" />
+        <img :src="userStore.user.photo" alt="avator" />
       </div>
       <div class="w-full">
         <textarea
