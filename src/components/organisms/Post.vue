@@ -3,8 +3,8 @@ import useUserStore from '@/stores/user';
 import useFollowStore from '@/stores/follow';
 
 import { formatTime } from '@/methods/formatTime';
-import { apiGetComments, apiPostComment } from '@/api/api';
-import like from '@/methods/like';
+import { apiGetComments, apiPostComment, apiSharePost } from '@/api/api';
+import useLike from '@/methods/useLike';
 
 const props = defineProps({
   post: {
@@ -15,9 +15,10 @@ const props = defineProps({
 const userStore = useUserStore();
 const followStore = useFollowStore();
 
-const { likes, getLikes, toggleLikes } = like();
+const { likes, getLikes, toggleLikes } = useLike();
 
-const commentDom = null;
+const commentDom = ref();
+const contentDom = ref();
 const imgModal = ref();
 
 const openComment = ref(false);
@@ -25,7 +26,8 @@ const comments = ref([]);
 const content = ref('');
 const isLoading = ref(false);
 const isShowLikeModal = ref(false);
-
+const isShowShareModal = ref(false);
+const isTruncate = ref(false);
 const isLike = computed(() => {
   const filter = likes.value.filter((item) => item._id === userStore.user.id);
   return filter.length;
@@ -38,13 +40,29 @@ const imagesClass = computed(() => {
   if (props.post.images.length === 2) {
     return 'grid-cols-2 ';
   }
-  return 'grid-cols-2 grid-rows-2';
+  if (props.post.images.length === 3) {
+    return 'grid-cols-2 grid-rows-2';
+  }
+  return 'grid-cols-2 ';
 });
 
 watchEffect(() => {
   comments.value = props.post.comments;
   likes.value = props.post.likes;
 });
+
+const calcLine = () => {
+  const style = window.getComputedStyle(contentDom.value, null);
+
+  const row = Math.ceil(
+    Number(style.height.replace('px', '')) /
+      Number(style.lineHeight.replace('px', ''))
+  );
+
+  if (row > 2) {
+    isTruncate.value = true;
+  }
+};
 
 const postComment = async (id) => {
   try {
@@ -63,6 +81,9 @@ const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
   return filter.length;
 };
+const sharePost = async () => {
+  await apiSharePost(props.post._id);
+};
 
 onMounted(async () => {
   try {
@@ -70,6 +91,10 @@ onMounted(async () => {
   } catch (error) {
     console.log(error);
   }
+
+  nextTick(() => {
+    calcLine();
+  });
 });
 </script>
 <template>
@@ -90,9 +115,22 @@ onMounted(async () => {
       </div>
     </div>
     <div class="border-b border-gray-700 pb-2">
-      <div class="mb-5">
+      <div
+        ref="contentDom"
+        class="relative mb-5"
+        :class="isTruncate && 'line-clamp-2 '"
+      >
         {{ props.post.content }}
+        <button
+          v-if="isTruncate"
+          type="button"
+          class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+          @click="isTruncate = false"
+        >
+          ...顯示更多
+        </button>
       </div>
+
       <div v-if="props.post.images.length" class="mb-5">
         <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
           <div
@@ -157,6 +195,7 @@ onMounted(async () => {
       </div>
       <div
         class="flex cursor-pointer items-center justify-center py-3 transition-all duration-200 hover:bg-green-500/30 hover:text-green-300"
+        @click="isShowShareModal = true"
       >
         <ri:share-box-line class="mr-1" />
         分享
@@ -230,7 +269,7 @@ onMounted(async () => {
         <button
           v-if="judgeFollowing(item._id)"
           type="button"
-          class="ml-auto rounded-md bg-red-900 py-2 px-2 text-sm hover:text-red-300"
+          class="cancel-btn ml-auto bg-red-900/50"
           @click="followStore.toggleFollow(item._id)"
         >
           <span>取消追蹤</span>
@@ -238,8 +277,9 @@ onMounted(async () => {
         <button
           v-else
           type="button"
-          class="ml-auto rounded-md bg-red-900 py-2 px-2 text-sm hover:text-red-300"
-          :class="userStore.user.id === item._id && 'hidden'"
+          :class="
+            userStore.user.id === item._id ? 'hidden' : 'confirm-btn ml-auto'
+          "
           @click="followStore.toggleFollow(item._id)"
         >
           <span>追蹤</span>
@@ -247,6 +287,53 @@ onMounted(async () => {
       </div>
     </template>
   </Modal>
+  <SharePostModal
+    v-model="isShowShareModal"
+    :title="'分享貼文'"
+    @confirm="sharePost"
+  >
+    <template #title>分享貼文</template>
+    <div class="w-[300px] border-4 border-gray-600 p-5 md:w-[500px]">
+      <div class="mb-5 flex border-b border-gray-700 pb-2">
+        <div class="h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12">
+          <img :src="post.user.photo" alt="avatar" />
+        </div>
+        <div class="ml-2">
+          <router-link
+            class="font-bold hover:text-blue-400 md:text-xl"
+            :to="`/auth/posts/${props.post.user._id}`"
+            >{{ props.post.user.name }}</router-link
+          >
+          <p class="text-sm text-gray-500">
+            {{ formatTime(props.post.createdAt) }}
+          </p>
+        </div>
+      </div>
+      <div class="border-b border-gray-700 pb-2">
+        <div class="mb-5">
+          {{ props.post.content }}
+        </div>
+        <div v-if="props.post.images.length" class="mb-5">
+          <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
+            <div
+              v-for="(image, i) in props.post.images"
+              :key="image"
+              :style="{ backgroundImage: 'url(' + image + ')' }"
+              class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
+              :class="
+                props.post.images.length >= 3
+                  ? 'odd:row-span-2'
+                  : 'odd:row-auto'
+              "
+              @click="imgModal.showImg(i)"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <template #cancel>取消貼文</template>
+    <template #confirm>分享貼文</template>
+  </SharePostModal>
   <ImageModal
     v-if="props.post.images.length"
     ref="imgModal"

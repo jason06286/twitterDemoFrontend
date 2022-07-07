@@ -24,7 +24,7 @@ const logout = () => {
     class="fixed left-0 right-0 bottom-0 grid h-16 grid-cols-4 rounded-t-2xl bg-black sm:hidden"
   >
     <router-link
-      to="/posts"
+      to="/auth/posts"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="route.path === '/auth/posts' && 'border-b-4 text-teal-50'"
     >
@@ -58,9 +58,9 @@ const logout = () => {
     <router-link
       to="/"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/profile' && 'border-b-4  border-teal-50'"
+      :class="route.path === '/auth/posts/:id' && 'border-b-4  border-teal-50'"
     >
-      <template v-if="route.path !== '/auth/profile'">
+      <template v-if="route.path !== '/auth/posts/:id'">
         <teenyicons:user-outline class="absolute" />
       </template>
       <template v-else>

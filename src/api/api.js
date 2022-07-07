@@ -40,6 +40,7 @@ console.log(
 export const apiGetUsers = () => baseRequest.get('user');
 export const apiGetProfile = (id) => baseRequest.get(`user/profile/${id}`);
 export const apiGetPosts = () => baseRequest.get('posts');
+export const apiAddPost = (data) => baseRequest.post(`post`, data);
 
 export const apiGetFollow = (id) => baseRequest.get(`follow/${id}`);
 export const apiToggleFollow = (id) => baseRequest.patch(`follow/${id}`);
@@ -50,3 +51,7 @@ export const apiToggleLikes = (id) => baseRequest.patch(`post/${id}/likes`);
 export const apiGetComments = (id) => baseRequest.get(`post/${id}/comments`);
 export const apiPostComment = (id, data) =>
   baseRequest.post(`post/${id}/comments`, data);
+
+export const apiSharePost = (id) => baseRequest.post(`post/share/${id}`);
+
+export const apiUploadFile = (data) => baseRequest.post('uploadImage', data);

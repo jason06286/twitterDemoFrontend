@@ -1,6 +1,6 @@
 import { apiGetLikes, apiToggleLikes } from '@/api/api';
 
-export default function like() {
+export default function useLike() {
   const likes = ref([]);
 
   const getLikes = async (id) => {
