@@ -1,0 +1,1 @@
+import{d,r as u}from"./index.1c1d4bc2.js";const f=d("user",()=>{const e=u({});return{user:e,setUser:s=>{const{name:r,photo:t,_id:o,id:a,...n}=s;e.value={name:r,photo:t,id:o||a,data:n}}}});export{f as u};
