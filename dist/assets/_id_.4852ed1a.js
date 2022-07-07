@@ -1,1 +1,0 @@
-import{Q as e,o as t,c as s,t as a,u as r}from"./index.91a23ceb.js";const p={__name:"[id]",setup(c){const o=e();return console.log("route :>> ",o),console.log("route.params :>> ",o.params.id),(n,l)=>(t(),s("div",null,a(`Welcome to post  ${r(o).params.id}`),1))}};export{p as default};
