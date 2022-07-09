@@ -7,10 +7,9 @@ const props = defineProps({
     required: true,
   },
 });
+const emit = defineEmits(['confirm']);
 
 const isShowCancelModal = ref(false);
-
-const emit = defineEmits(['confirm']);
 
 const confirm = () => {
   emit('confirm');

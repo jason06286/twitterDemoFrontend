@@ -1,5 +1,9 @@
 <script setup>
+import useUserStore from '@/stores/user';
+
 const route = useRoute();
+
+const userStore = useUserStore();
 
 const logout = () => {
   document.cookie = 'twitterToken=;';
@@ -56,11 +60,11 @@ const logout = () => {
       >
     </router-link>
     <router-link
-      to="/"
+      :to="`/auth/profile/${userStore.user.id}`"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts/:id' && 'border-b-4  border-teal-50'"
+      :class="route.path === '/auth/posts' && 'border-b-4  border-teal-50'"
     >
-      <template v-if="route.path !== '/auth/posts/:id'">
+      <template v-if="route.path !== '/auth'">
         <teenyicons:user-outline class="absolute" />
       </template>
       <template v-else>

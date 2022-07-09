@@ -5,6 +5,7 @@ export default function useLike() {
 
   const getLikes = async (id) => {
     const res = await apiGetLikes(id);
+    console.log('likes :>> ', res);
     likes.value = res.data.data;
   };
   const toggleLikes = async (id) => {

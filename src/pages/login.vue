@@ -1,4 +1,6 @@
 <script setup>
+import moment from 'moment';
+
 import { useForm, useField } from 'vee-validate';
 import { loginSchema } from '@/methods/validate';
 import { apiLogin, apiGoogle } from '@/api/api';
@@ -21,6 +23,7 @@ const googleLogin = () => {
 };
 
 const onSubmit = handleSubmit(async () => {
+  const date = moment().utc().add(7, 'days').format();
   isLoading.value = true;
   errorMessage.value = '';
   try {
@@ -30,7 +33,7 @@ const onSubmit = handleSubmit(async () => {
     };
     const res = await apiLogin(user);
     const { token } = res.data.data;
-    document.cookie = `twitterToken=${token}`;
+    document.cookie = `twitterToken=${token}; expires=${date}; path=/`;
     router.push('/auth');
   } catch (error) {
     errorMessage.value = error.response.data.message;

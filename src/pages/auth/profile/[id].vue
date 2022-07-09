@@ -1,0 +1,295 @@
+<script setup>
+import { $vfm } from 'vue-final-modal';
+
+import useProfilePostsStore from '@/stores/profilePosts';
+import useFollowStore from '@/stores/follow';
+import useUserStore from '@/stores/user';
+
+import { apiGetProfile } from '@/api/api';
+
+const route = useRoute();
+
+const userStore = useUserStore();
+const followStore = useFollowStore();
+const profilePostsStore = useProfilePostsStore();
+
+const userProfile = ref([]);
+
+const isLoading = ref(false);
+const isUser = computed(() => route.params.id === userStore.user.id);
+
+const isShowAddPostModal = ref(false);
+const isShowEditPostModal = ref(false);
+const isShowFollowingModal = ref(false);
+const isShowFollowerModal = ref(false);
+
+const judgeFollowing = (id) => {
+  const filter = followStore.following.filter((item) => item.user._id === id);
+  return filter.length;
+};
+const showEditPostModal = (id) => {
+  isShowEditPostModal.value = true;
+  $vfm.show(id);
+};
+
+const getProfilePosts = async () => {
+  isLoading.value = true;
+  await profilePostsStore.getProfilePosts(userProfile.value.user._id);
+  isLoading.value = false;
+};
+
+const init = async () => {
+  isLoading.value = true;
+  try {
+    const res = await apiGetProfile(route.params.id);
+    userProfile.value = res.data.data;
+    await getProfilePosts();
+
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  }
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  });
+  isLoading.value = false;
+};
+
+onMounted(async () => {
+  await followStore.getFollow(route.params.id);
+  await init();
+});
+</script>
+<template>
+  <Loading :is-loading="isLoading" />
+  <Navbar />
+  <div
+    class="relative h-auto bg-cover bg-center shadow-md before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/50 before:via-black/90 before:to-black sm:mt-[48px]"
+    :style="{ backgroundImage: 'url(' + userProfile?.coverImage + ')' }"
+  >
+    <div class="container m-auto">
+      <div
+        :style="{ backgroundImage: 'url(' + userProfile?.coverImage + ')' }"
+        class="relative h-[150px] w-full bg-cover bg-center before:absolute before:inset-0 before:bg-black/10 sm:h-[300px] lg:h-[400px]"
+      ></div>
+      <div
+        class="relative flex flex-col items-center justify-center px-5 py-5 lg:flex-row"
+      >
+        <div
+          class="-mt-12 h-32 w-32 overflow-hidden rounded-full border-4 border-slate-300"
+        >
+          <img
+            :src="userProfile?.user?.photo"
+            alt="avatar"
+            class="block h-auto w-full"
+          />
+        </div>
+        <div class="ml-5 text-gray-400">
+          <h2 class="mb-3 text-center text-2xl font-bold text-gray-300">
+            {{ userProfile?.user?.name }}
+          </h2>
+          <div class="flex">
+            <p class="border-r pr-2">
+              正在追蹤
+              <span
+                class="cursor-pointer hover:text-blue-400"
+                @click="isShowFollowingModal = true"
+                >{{ followStore.following.length }}</span
+              >
+              人
+            </p>
+            <p class="pl-2">
+              <span
+                class="cursor-pointer hover:text-blue-400"
+                @click="isShowFollowerModal = true"
+                >{{ followStore.follower.length }}</span
+              >
+              位追蹤者
+            </p>
+          </div>
+        </div>
+
+        <div v-if="isUser" class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
+          <button type="button" class="confirm-btn bg-blue-900/50">
+            <ic:round-edit class="mr-1" /> 編輯個人資料
+          </button>
+          <button
+            v-if="!userStore.user.data.isThirdPartyLogin"
+            type="button"
+            class="confirm-btn bg-gray-400/60"
+          >
+            <ic:round-lock class="mr-1" /> 修改密碼
+          </button>
+        </div>
+        <div v-else class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
+          <button
+            v-if="judgeFollowing(route.params.id)"
+            type="button"
+            class="confirm-btn bg-blue-900/50"
+            @click="followStore.toggleFollow(route.params.id)"
+          >
+            追蹤起來
+          </button>
+          <button
+            v-else
+            type="button"
+            class="cancel-btn bg-red-900/50"
+            @click="followStore.toggleFollow(route.params.id)"
+          >
+            取消追蹤
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container m-auto mt-8">
+    <div class="grid grid-cols-1 gap-x-8 lg:grid-cols-6">
+      <div class="col-auto lg:col-span-2">
+        <div
+          class="mb-5 w-full rounded-md bg-black p-3 text-gray-400 shadow-md"
+        >
+          <h2 class="text-xl font-bold">關於</h2>
+          <DotLine class="my-3" />
+          <div>
+            {{ userProfile?.description }}
+          </div>
+        </div>
+      </div>
+      <div class="col-auto lg:col-span-4">
+        <div
+          v-if="isUser"
+          class="mb-5 flex items-center rounded-md bg-black px-5 py-3"
+        >
+          <div
+            class="mr-3 h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12"
+          >
+            <img :src="userProfile?.user?.photo" alt="avatar" />
+          </div>
+          <div
+            class="group w-full cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
+            @click="isShowAddPostModal = true"
+          >
+            <p class="font-semibold text-gray-400 group-hover:text-blue-500">
+              What's happening?
+            </p>
+          </div>
+        </div>
+        <div
+          v-if="!profilePostsStore?.posts.length"
+          class="mb-5 flex items-center justify-center gap-3 rounded-md bg-black px-5 py-3 text-gray-400"
+        >
+          <p class="text-sm">沒有相關貼文，分享你發生的事!</p>
+          <button
+            v-if="isUser"
+            type="button"
+            class="confirm-btn bg-blue-900/50"
+            @click="isShowAddPostModal = true"
+          >
+            新增貼文
+          </button>
+        </div>
+        <Post
+          v-for="post in profilePostsStore?.posts"
+          :key="post._id"
+          :post="post"
+          :is-user="isUser"
+          @init="init"
+          @showEditPostModal="showEditPostModal"
+        />
+      </div>
+    </div>
+  </div>
+  <Modal v-model="isShowFollowerModal">
+    <template #title>誰追蹤我</template>
+    <div
+      v-if="!followStore.follower.length"
+      class="flex h-full w-[300px] items-center justify-center text-sm"
+    >
+      還沒有任何人追蹤
+    </div>
+    <template v-else>
+      <div
+        v-for="follow in followStore.follower"
+        :key="follow._id"
+        class="mb-3 flex w-[300px] items-center"
+      >
+        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
+          <img :src="follow.user.photo" alt="avatar" />
+        </div>
+        <router-link
+          class="font-bold"
+          :to="`/auth/profile/${follow.user._id}`"
+          >{{ follow.user.name }}</router-link
+        >
+        <button
+          v-if="judgeFollowing(follow.user._id)"
+          type="button"
+          class="cancel-btn ml-auto bg-red-900/50"
+          @click="followStore.toggleFollow(follow.user._id)"
+        >
+          <span>取消追蹤</span>
+        </button>
+        <button
+          v-else
+          type="button"
+          class="confirm-btn ml-auto"
+          :class="userStore.user.id === follow.user._id && 'hidden'"
+          @click="followStore.toggleFollow(follow.user._id)"
+        >
+          <span>追蹤</span>
+        </button>
+      </div>
+    </template>
+  </Modal>
+  <Modal v-model="isShowFollowingModal">
+    <template #title>追蹤名單</template>
+    <div
+      v-if="!followStore.following.length"
+      class="flex h-full w-[300px] items-center justify-center text-sm"
+    >
+      尚未追蹤任何人
+    </div>
+    <template v-else>
+      <div
+        v-for="follow in followStore.following"
+        :key="follow._id"
+        class="mb-3 flex w-[300px] items-center"
+      >
+        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
+          <img :src="follow.user.photo" alt="avatar" />
+        </div>
+        <router-link
+          class="font-bold"
+          :to="`/auth/profile/${follow.user._id}`"
+          >{{ follow.user.name }}</router-link
+        >
+
+        <button
+          type="button"
+          class="cancel-btn ml-auto bg-red-900/50"
+          @click="followStore.toggleFollow(follow.user._id)"
+        >
+          取消追蹤
+        </button>
+      </div>
+    </template>
+  </Modal>
+  <PublishPostModal v-model="isShowAddPostModal" @publish="init">
+  </PublishPostModal>
+  <template v-for="post in profilePostsStore?.posts">
+    <EditPostModal
+      v-if="!post.share"
+      :key="post._id"
+      :post="post"
+      @confirm="getProfilePosts"
+    >
+    </EditPostModal>
+  </template>
+</template>
+<style scoped>
+.bg-ig {
+  background-image: linear-gradient(45deg, #8baaaa 0%, #ae8b9c 100%);
+}
+</style>

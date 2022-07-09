@@ -3,55 +3,77 @@ import useUserStore from '@/stores/user';
 import useFollowStore from '@/stores/follow';
 
 import { formatTime } from '@/methods/formatTime';
-import { apiGetComments, apiPostComment, apiSharePost } from '@/api/api';
 import useLike from '@/methods/useLike';
 
+import { apiSharePost, apiDeletePost } from '@/api/api';
+
 const props = defineProps({
+  isUser: {
+    type: Boolean,
+    required: true,
+  },
   post: {
     type: Object,
     required: true,
   },
 });
+
+const emit = defineEmits(['init', 'showEditPostModal']);
+
 const userStore = useUserStore();
 const followStore = useFollowStore();
 
 const { likes, getLikes, toggleLikes } = useLike();
 
-const commentDom = ref();
-const contentDom = ref();
 const imgModal = ref();
+const comment = ref();
+const contentDom = ref();
 
-const openComment = ref(false);
-const comments = ref([]);
-const content = ref('');
-const isLoading = ref(false);
+const isTruncate = ref(false);
+const droupActive = ref(false);
+
 const isShowLikeModal = ref(false);
 const isShowShareModal = ref(false);
-const isTruncate = ref(false);
+const isShowDeletePostModal = ref(false);
+
 const isLike = computed(() => {
   const filter = likes.value.filter((item) => item._id === userStore.user.id);
   return filter.length;
 });
 
 const imagesClass = computed(() => {
-  if (props.post.images.length === 1) {
+  let images;
+  if (props.post.share) {
+    images = props.post.share.images;
+  } else [(images = props.post.images)];
+  if (images.length === 1) {
     return 'grid-cols-1 grid-rows-1';
   }
-  if (props.post.images.length === 2) {
+  if (images.length === 2) {
     return 'grid-cols-2 ';
   }
-  if (props.post.images.length === 3) {
+  if (images.length === 3) {
     return 'grid-cols-2 grid-rows-2';
   }
   return 'grid-cols-2 ';
 });
 
+const droupHeight = computed(() => {
+  if (droupActive.value & (props.post.share === undefined)) {
+    return 'h-[84px]';
+  }
+  if (droupActive.value & (props.post.share !== undefined)) {
+    return 'h-[42px]';
+  }
+  return 'h-0';
+});
+
 watchEffect(() => {
-  comments.value = props.post.comments;
   likes.value = props.post.likes;
 });
 
 const calcLine = () => {
+  if (!contentDom.value) return;
   const style = window.getComputedStyle(contentDom.value, null);
 
   const row = Math.ceil(
@@ -64,25 +86,27 @@ const calcLine = () => {
   }
 };
 
-const postComment = async (id) => {
-  try {
-    isLoading.value = true;
-    await apiPostComment(id, { content: content.value });
-    const res = await apiGetComments(id);
-    comments.value = res.data.data;
-    isLoading.value = false;
-    openComment.value = true;
-    content.value = '';
-  } catch (error) {
-    console.log(error);
-  }
-};
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
   return filter.length;
 };
+
 const sharePost = async () => {
   await apiSharePost(props.post._id);
+  emit('init');
+};
+const deletePost = async () => {
+  await apiDeletePost(props.post._id);
+  emit('init');
+};
+const showEditPostModal = () => {
+  droupActive.value = !droupActive.value;
+  emit('showEditPostModal', props.post._id);
+};
+
+const showDeletePostModal = () => {
+  droupActive.value = !droupActive.value;
+  isShowDeletePostModal.value = true;
 };
 
 onMounted(async () => {
@@ -91,7 +115,6 @@ onMounted(async () => {
   } catch (error) {
     console.log(error);
   }
-
   nextTick(() => {
     calcLine();
   });
@@ -100,51 +123,155 @@ onMounted(async () => {
 <template>
   <div class="mb-5 rounded-md bg-black px-5 py-3 text-gray-400">
     <div class="mb-5 flex border-b border-gray-700 pb-2">
-      <div class="h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12">
-        <img :src="post.user.photo" alt="avatar" />
+      <div
+        v-if="props.post.share"
+        class="ml-3 flex items-center gap-3 self-end text-base font-bold text-gray-400 lg:text-xl"
+      >
+        <ic:round-share class="mr-2" />
+        <div class="h-8 w-8 overflow-hidden rounded-full">
+          <img :src="props.post.user.photo" alt="avatar" />
+        </div>
+        <div>
+          {{ props.post.user.name }} <span class="text-gray-300/80">分享</span>
+          <p class="text-sm text-gray-500">
+            {{ formatTime(props.post.createdAt) }}
+          </p>
+        </div>
       </div>
-      <div class="ml-2">
-        <router-link
-          class="font-bold hover:text-blue-400 md:text-xl"
-          :to="`/auth/posts/${props.post.user._id}`"
-          >{{ props.post.user.name }}</router-link
+      <div v-else class="flex">
+        <div class="h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12">
+          <img :src="post.user.photo" alt="avatar" />
+        </div>
+        <div class="ml-2">
+          <router-link
+            class="font-bold hover:text-blue-400 md:text-xl"
+            :to="`/auth/profile/${props.post.user._id}`"
+            >{{ props.post.user.name }}</router-link
+          >
+          <p class="text-sm text-gray-500">
+            {{ formatTime(props.post.createdAt) }}
+          </p>
+        </div>
+      </div>
+      <div class="relative ml-auto">
+        <button
+          v-if="props.isUser"
+          type="button"
+          class="px-2 py-2 hover:text-blue-300"
+          @click="droupActive = !droupActive"
         >
-        <p class="text-sm text-gray-500">
-          {{ formatTime(props.post.createdAt) }}
-        </p>
+          <bi:three-dots-vertical />
+        </button>
+        <ul
+          class="absolute bottom-0 right-0 z-10 w-36 translate-y-full overflow-hidden bg-black shadow-md shadow-slate-600 transition-all duration-500"
+          :class="droupHeight"
+        >
+          <li
+            v-if="!props.post.share"
+            class="flex cursor-pointer items-center border-b border-gray-500 px-3 py-2 hover:bg-blue-800 hover:text-blue-300"
+            @click="showEditPostModal"
+          >
+            <ic:round-edit class="mr-2" /> 編輯貼文
+          </li>
+          <li
+            class="flex cursor-pointer items-center px-3 py-2 hover:bg-red-800 hover:text-red-300"
+            @click="showDeletePostModal"
+          >
+            <ic:round-delete class="mr-2" /> 刪除貼文
+          </li>
+        </ul>
+        <div
+          v-if="droupActive"
+          class="fixed inset-0 -z-0 h-full w-full bg-transparent"
+          @click.prevent="droupActive = false"
+        ></div>
       </div>
     </div>
     <div class="border-b border-gray-700 pb-2">
-      <div
-        ref="contentDom"
-        class="relative mb-5"
-        :class="isTruncate && 'line-clamp-2 '"
-      >
-        {{ props.post.content }}
-        <button
-          v-if="isTruncate"
-          type="button"
-          class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
-          @click="isTruncate = false"
+      <div v-if="props.post.share" class="my-3 border-2 p-5">
+        <div class="mb-5 flex border-b border-gray-700 pb-2">
+          <div class="h-8 w-8 overflow-hidden rounded-full md:h-10 md:w-10">
+            <img :src="props.post.share.user.photo" alt="avatar" />
+          </div>
+          <div class="ml-2">
+            <router-link
+              class="font-bold hover:text-blue-400 md:text-xl"
+              :to="`/auth/profile/${props.post.share.user._id}`"
+              >{{ props.post.share.user.name }}</router-link
+            >
+            <p class="text-sm text-gray-500">
+              {{ formatTime(props.post.share.createdAt) }}
+            </p>
+          </div>
+        </div>
+        <div
+          ref="contentDom"
+          class="relative mb-5"
+          :class="isTruncate && 'line-clamp-2 '"
         >
-          ...顯示更多
-        </button>
-      </div>
+          {{ props.post.share.content }}
+          <button
+            v-if="isTruncate"
+            type="button"
+            class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            @click="isTruncate = false"
+          >
+            ...顯示更多
+          </button>
+        </div>
 
-      <div v-if="props.post.images.length" class="mb-5">
-        <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
-          <div
-            v-for="(image, i) in props.post.images"
-            :key="image"
-            :style="{ backgroundImage: 'url(' + image + ')' }"
-            class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
-            :class="
-              props.post.images.length >= 3 ? 'odd:row-span-2' : 'odd:row-auto'
-            "
-            @click="imgModal.showImg(i)"
-          ></div>
+        <div v-if="props.post.share.images.length" class="mb-5">
+          <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
+            <div
+              v-for="(image, i) in props.post.share.images"
+              :key="image"
+              :style="{ backgroundImage: 'url(' + image + ')' }"
+              class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
+              :class="
+                props.post.share.images.length >= 3
+                  ? 'odd:row-span-2'
+                  : 'odd:row-auto'
+              "
+              @click="imgModal.showImg(i)"
+            ></div>
+          </div>
         </div>
       </div>
+      <div v-else>
+        <div
+          ref="contentDom"
+          class="relative mb-5"
+          :class="isTruncate && 'line-clamp-2 '"
+        >
+          {{ props.post.content }}
+          <button
+            v-if="isTruncate"
+            type="button"
+            class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            @click="isTruncate = false"
+          >
+            ...顯示更多
+          </button>
+        </div>
+
+        <div v-if="props.post.images.length" class="mb-5">
+          <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
+            <div
+              v-for="(image, i) in props.post.images"
+              :key="image"
+              :style="{ backgroundImage: 'url(' + image + ')' }"
+              class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
+              :class="
+                props.post.images.length >= 3
+                  ? 'odd:row-span-2'
+                  : 'odd:row-auto'
+              "
+              @click="imgModal.showImg(i)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
       <div class="mb-3 flex gap-2">
         <div v-if="!likes.length" class="flex items-center text-gray-500">
           <ri:heart-3-line class="mr-1" />
@@ -158,21 +285,29 @@ onMounted(async () => {
           <ri:heart-3-fill class="mr-1 text-red-600" />
           <p class="group-hover:text-blue-500">{{ likes.length }} 個人喜歡</p>
         </div>
-        <div v-if="!comments.length" class="flex items-center text-gray-500">
+        <div
+          v-if="!comment?.comments?.length"
+          class="flex items-center text-gray-500"
+        >
           <ri:chat-1-line class="mr-1" />
           <p>尚無留言</p>
         </div>
         <div
           v-else
           class="group flex cursor-pointer items-center text-gray-400"
-          @click="openComment = !openComment"
+          @click="comment?.openComment"
         >
           <ri:chat-1-fill class="mr-1 text-blue-500" />
-          <p class="group-hover:text-blue-500">{{ comments.length }} 則留言</p>
+          <p class="group-hover:text-blue-500">
+            {{ comment?.comments?.length }} 則留言
+          </p>
         </div>
       </div>
     </div>
-    <div class="grid grid-cols-3 border-b border-gray-700">
+    <div
+      class="grid border-b border-gray-700"
+      :class="!props.post.share ? 'grid-cols-3' : 'grid-cols-2'"
+    >
       <div
         class="flex cursor-pointer items-center justify-center border-r border-gray-700 py-3 transition-all duration-200 hover:bg-red-500/30 hover:text-pink-300"
         :class="isLike && 'text-red-800'"
@@ -188,12 +323,13 @@ onMounted(async () => {
       </div>
       <div
         class="flex cursor-pointer items-center justify-center border-r border-gray-700 py-3 transition-all duration-200 hover:bg-blue-500/30 hover:text-blue-300"
-        @click="commentDom.focus()"
+        @click="comment?.focusComment"
       >
         <ri:chat-1-line class="mr-1" />
         留言
       </div>
       <div
+        v-if="!props.post.share"
         class="flex cursor-pointer items-center justify-center py-3 transition-all duration-200 hover:bg-green-500/30 hover:text-green-300"
         @click="isShowShareModal = true"
       >
@@ -201,51 +337,9 @@ onMounted(async () => {
         分享
       </div>
     </div>
-    <div v-if="openComment" class="my-3">
-      <div v-for="comment in comments" :key="comment._id" class="mb-3 flex">
-        <div class="mr-3 h-8 w-8 overflow-hidden rounded-full">
-          <img :src="comment.commenter.photo" alt="avatar" />
-        </div>
-        <div class="rounded-lg bg-blue-900/50 px-3 py-2">
-          <div class="flex justify-between">
-            <h3 class="mr-3 font-bold">{{ comment.commenter.name }}</h3>
-            <p class="text-sm text-gray-600">
-              {{ formatTime(comment.createdAt) }}
-            </p>
-          </div>
-          <p>{{ comment.content }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="mt-3 flex items-center">
-      <div class="mr-2 h-9 w-9 overflow-hidden rounded-full">
-        <img :src="userStore.user.photo" alt="avatar" />
-      </div>
-      <label class="flex w-full rounded-full bg-blue-900/50 py-1">
-        <div v-if="isLoading" class="ml-5 mt-1 flex shrink grow">
-          <p>留言</p>
-          <eos-icons:three-dots-loading class="text-2xl text-blue-300" />
-        </div>
-        <input
-          v-else
-          ref="commentDom"
-          v-model.trim="content"
-          type="text"
-          class="ml-3 mr-auto shrink grow border-none bg-transparent py-0.5 focus:outline-none"
-          placeholder="留言..."
-          @keyup.enter="postComment(props.post._id)"
-        />
-        <button
-          type="button"
-          class="mx-1 flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-3 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700"
-          :disabled="isLoading"
-          @click="postComment(props.post._id)"
-        >
-          <span>留言</span>
-        </button>
-      </label>
-    </div>
+    <Comment ref="comment" :post="props.post" />
   </div>
+
   <Modal v-model="isShowLikeModal">
     <template #title>喜歡的用戶</template>
     <div
@@ -263,7 +357,7 @@ onMounted(async () => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="item.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/auth/posts/${item._id}`">{{
+        <router-link class="font-bold" :to="`/auth/profile/${item._id}`">{{
           item.name
         }}</router-link>
         <button
@@ -301,7 +395,7 @@ onMounted(async () => {
         <div class="ml-2">
           <router-link
             class="font-bold hover:text-blue-400 md:text-xl"
-            :to="`/auth/posts/${props.post.user._id}`"
+            :to="`/auth/profile/${props.post.user._id}`"
             >{{ props.post.user.name }}</router-link
           >
           <p class="text-sm text-gray-500">
@@ -334,10 +428,20 @@ onMounted(async () => {
     <template #cancel>取消貼文</template>
     <template #confirm>分享貼文</template>
   </SharePostModal>
-  <ImageModal
-    v-if="props.post.images.length"
-    ref="imgModal"
-    :images="props.post.images"
-  />
+  <DeletePostModal v-model="isShowDeletePostModal" @confirm="deletePost" />
+  <template v-if="props.post.share">
+    <ImageModal
+      v-if="props.post.share.images.length"
+      ref="imgModal"
+      :images="props.post.share.images"
+    />
+  </template>
+  <template v-else>
+    <ImageModal
+      v-if="props.post.images.length"
+      ref="imgModal"
+      :images="props.post.images"
+    />
+  </template>
 </template>
 <style></style>

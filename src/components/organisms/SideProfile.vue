@@ -24,7 +24,7 @@ const judgeFollowing = (id) => {
         <img :src="userStore.user.photo" alt="avatar" />
       </div>
       <router-link
-        :to="`/auth/posts/${userStore.user.id}`"
+        :to="`/auth/profile/${userStore.user.id}`"
         class="my-3 text-2xl font-bold text-gray-400 hover:text-blue-400"
       >
         {{ userStore.user.name }}
@@ -56,7 +56,7 @@ const judgeFollowing = (id) => {
     <div class="mt-8 w-64 rounded-md bg-black p-9 shadow-md">
       <router-link
         class="confirm-btn mb-5"
-        :to="`/auth/posts/${userStore.user.id}`"
+        :to="`/auth/profile/${userStore.user.id}`"
       >
         <teenyicons:user-solid class="text-slate-400" />
         <span class="ml-2">個人資料</span>
@@ -95,9 +95,11 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/auth/posts/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <router-link
+          class="font-bold"
+          :to="`/auth/profile/${follow.user._id}`"
+          >{{ follow.user.name }}</router-link
+        >
         <button
           v-if="judgeFollowing(follow.user._id)"
           type="button"
@@ -135,9 +137,11 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/auth/posts/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <router-link
+          class="font-bold"
+          :to="`/auth/profile/${follow.user._id}`"
+          >{{ follow.user.name }}</router-link
+        >
 
         <button
           type="button"

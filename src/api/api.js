@@ -33,14 +33,13 @@ baseRequest = axios.create({
   baseURL: `https://fast-tundra-64548.herokuapp.com/api/`,
 });
 
-console.log(
-  'axios.defaults.headers.common.Authorization :>> ',
-  axios.defaults.headers.common.Authorization
-);
 export const apiGetUsers = () => baseRequest.get('user');
 export const apiGetProfile = (id) => baseRequest.get(`user/profile/${id}`);
+export const apiGetProfilePosts = (id) => baseRequest.get(`posts/user/${id}`);
 export const apiGetPosts = () => baseRequest.get('posts');
 export const apiAddPost = (data) => baseRequest.post(`post`, data);
+export const apiEditPost = (id, data) => baseRequest.patch(`post/${id}`, data);
+export const apiDeletePost = (id) => baseRequest.delete(`post/${id}`);
 
 export const apiGetFollow = (id) => baseRequest.get(`follow/${id}`);
 export const apiToggleFollow = (id) => baseRequest.patch(`follow/${id}`);

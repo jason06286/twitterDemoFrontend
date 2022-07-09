@@ -33,14 +33,14 @@ const logout = () => {
         <span>追蹤名單</span>
       </router-link>
       <router-link
-        :to="`/auth/posts/${store.user.id}`"
+        :to="`/auth/profile/${store.user.id}`"
         class="flex items-center gap-1 border-b border-gray-500 py-2 px-3 text-sm text-gray-400 transition-all duration-200 last:border-b-0 hover:bg-blue-300/20"
       >
         <carbon:user-profile />
         <span>個人貼文牆</span>
       </router-link>
       <router-link
-        to="/"
+        :to="`/auth/profile/${store.user.id}`"
         class="flex items-center gap-1 border-b border-gray-500 py-2 px-3 text-sm text-gray-400 transition-all duration-200 last:border-b-0 hover:bg-blue-300/20"
       >
         <mdi:credit-card-edit />

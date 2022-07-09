@@ -1,5 +1,6 @@
 <script setup>
 import useUserStore from '@/stores/user';
+
 import useFollowStore from '@/stores/follow';
 import { apiGetPosts } from '@/api/api';
 
@@ -43,7 +44,7 @@ onMounted(async () => {
           <div
             class="mr-3 h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12"
           >
-            <img src="https://i.imgur.com/eInPDId.png" alt="avatar" />
+            <img :src="userStore.user.photo" alt="avatar" />
           </div>
           <div
             class="group w-full cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
@@ -54,7 +55,13 @@ onMounted(async () => {
             </p>
           </div>
         </div>
-        <Post v-for="post in posts" :key="post.id" :post="post" />
+        <Post
+          v-for="post in posts"
+          :key="post.id"
+          :post="post"
+          :is-user="false"
+          @init="init"
+        />
       </div>
       <SideProfile @publishPost="isShowAddPostModal = true" />
     </div>

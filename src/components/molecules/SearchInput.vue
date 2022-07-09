@@ -15,7 +15,7 @@ const filterUsers = computed(() => {
 
 const goSearching = (id = '') => {
   if (!id) return;
-  router.push(`/auth/post/${id}`);
+  router.push(`/auth/profile/${id}`);
 };
 
 onMounted(async () => {

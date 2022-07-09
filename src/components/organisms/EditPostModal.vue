@@ -3,22 +3,35 @@ import { VueFinalModal, $vfm } from 'vue-final-modal';
 import useUserStore from '@/stores/user';
 
 import useImage from '@/methods/useImage';
-import { apiAddPost } from '@/api/api';
+import { apiEditPost } from '@/api/api';
 
-const emit = defineEmits(['publish']);
+const props = defineProps({
+  post: {
+    type: Object,
+    required: true,
+  },
+});
+const emit = defineEmits(['confirm']);
 
 const userStore = useUserStore();
 
 const { images, errormsg, uploadFile, deleteImage } = useImage();
+
+const isShowEditPostModal = ref(false);
 const isShowCancelModal = ref(false);
 const content = ref('');
 const isLoading = ref(false);
+
+watchEffect(() => {
+  content.value = props.post.content;
+  images.value = [...props.post.images];
+});
 
 const doUploadFile = async (e) => {
   isLoading.value = true;
   try {
     const res = await uploadFile(e.target);
-    images.value.push(res.data.data.imgUrl);
+    await images.value.push(res.data.data.imgUrl);
   } catch (error) {
     console.log(error);
     errormsg.value = error.response.data.message;
@@ -26,8 +39,8 @@ const doUploadFile = async (e) => {
   isLoading.value = false;
 };
 const reStart = () => {
-  content.value = '';
-  images.value.length = 0;
+  content.value = props.post.content;
+  images.value = [...props.post.images];
   isLoading.value = false;
   errormsg.value = '';
   $vfm.hideAll();
@@ -38,31 +51,24 @@ const publishPost = async () => {
     return (errormsg.value = '請輸入貼文內容或上傳一張圖片');
   }
   try {
-    const res = await apiAddPost({
+    await apiEditPost(props.post.id, {
       content: content.value,
       images: images.value,
     });
-    emit('publish');
+    emit('confirm');
     reStart();
     $vfm.hideAll();
-    console.log(res);
   } catch (error) {
     console.log(error);
   }
 };
-
-onUnmounted(() => {
-  content.value = '';
-  images.value.length = 0;
-  isLoading.value = false;
-  errormsg.value = '';
-});
 </script>
 <template>
   <vue-final-modal
-    :click-to-close="false"
     v-bind="$attrs"
-    name="123"
+    v-model="isShowEditPostModal"
+    :click-to-close="false"
+    :name="props.post.id"
     classes="flex justify-center items-center text-gray-300 rounded-lg"
     content-class="relative flex flex-col max-h-full mx-4 p-4 border dark:border-gray-800 rounded-md bg-white dark:bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
@@ -80,7 +86,6 @@ onUnmounted(() => {
           placeholder="What's happening?"
           class="h-[120px] w-full bg-transparent p-3 focus:outline-none sm:h-[200px]"
         ></textarea>
-
         <div
           v-if="images.length"
           class="h-[200px] flex-grow overflow-y-auto sm:h-[400px]"
@@ -114,7 +119,7 @@ onUnmounted(() => {
             v-if="isLoading"
             class="animate-spin text-xl text-cyan-600"
           />
-          <label v-else for="file" class="group cursor-pointer">
+          <label v-else :for="props.post.id" class="group cursor-pointer">
             <mdi:picture
               class="text-xl"
               :class="
@@ -125,7 +130,7 @@ onUnmounted(() => {
             />
           </label>
           <input
-            id="file"
+            :id="props.post.id"
             :disabled="images.length >= 4"
             type="file"
             accept="image/png, image/jpeg"
@@ -138,7 +143,7 @@ onUnmounted(() => {
             :disabled="isLoading"
             @click="publishPost"
           >
-            發布貼文
+            編輯貼文
           </button>
         </div>
       </div>
@@ -151,12 +156,12 @@ onUnmounted(() => {
     content-class="relative flex flex-col max-h-full mx-4 p-4 border dark:border-gray-800 rounded bg-white dark:bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
-    <span class="mr-8 text-center text-xl font-bold"> 捨棄/取消 新增貼文 </span>
+    <span class="mr-8 text-center text-xl font-bold"> 捨棄/取消 編輯貼文 </span>
     <DotLine class="my-3" :error="true" />
     <div
       class="flex w-[300px] flex-grow flex-col items-center justify-center overflow-y-auto border-b border-gray-600 py-5 text-gray-400"
     >
-      <p>確定要捨棄/取消 新增這篇貼文嗎?</p>
+      <p>確定要捨棄/取消 編輯這篇貼文嗎?</p>
       <p class="text-sm">系統將不會儲存你的編輯內容</p>
     </div>
     <div class="flex flex-shrink-0 items-center justify-end gap-x-5 pt-4">
