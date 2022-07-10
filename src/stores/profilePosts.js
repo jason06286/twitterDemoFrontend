@@ -7,6 +7,7 @@ const useProfilePostsStore = defineStore('profile-post', () => {
   const posts = ref([]);
 
   const getProfilePosts = async (id) => {
+    console.log('Profil id :>> ', id);
     try {
       const res = await apiGetProfilePosts(id);
       posts.value = res.data.data;

@@ -8,6 +8,7 @@ import useUserStore from '@/stores/user';
 import { apiGetProfile, apiGetFollow } from '@/api/api';
 
 const route = useRoute();
+const router = useRouter();
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
@@ -33,10 +34,16 @@ const showEditPostModal = (id) => {
   isShowEditPostModal.value = true;
   $vfm.show(id);
 };
+const redirect = (id) => {
+  $vfm.hideAll();
+  router.push(`/profile/${id}`);
+};
 
-const getProfilePosts = async () => {
+const getProfilePosts = async (id = userProfile.value.user._id) => {
+  console.log('2 :>> ', '2');
+  console.log('id :>> ', id);
   isLoading.value = true;
-  await profilePostsStore.getProfilePosts(userProfile.value.user._id);
+  await profilePostsStore.getProfilePosts(id);
   isLoading.value = false;
 };
 
@@ -54,9 +61,11 @@ const init = async () => {
   try {
     const res = await apiGetProfile(route.params.id);
     userProfile.value = res.data.data;
-    await getProfilePosts();
+    console.log('userProfile.value :>> ', userProfile.value);
+    console.log('1 :>> ', '1');
+    await getProfilePosts(userProfile.value.user._id);
+    console.log('profilePostsStore.posts :>> ', profilePostsStore.posts);
     await getFollow(route.params.id);
-    console.log('userStore.user.id :>> ', userStore.user.id);
     await followStore.getFollow(userStore.user.id);
 
     console.log(res);
@@ -64,7 +73,7 @@ const init = async () => {
     console.log(error);
   }
   window.scrollTo({
-    top: 500,
+    top: 0,
     left: 0,
     behavior: 'smooth',
   });
@@ -73,7 +82,7 @@ const init = async () => {
 watch(
   () => route.params.id,
   async () => {
-    window.location.reload();
+    init();
   }
 );
 onMounted(async () => {
@@ -113,6 +122,12 @@ onMounted(async () => {
             <p class="border-r pr-2">
               正在追蹤
               <span
+                v-if="!following.length"
+                class="cursor-pointer hover:text-blue-400"
+                >0</span
+              >
+              <span
+                v-else
                 class="cursor-pointer hover:text-blue-400"
                 @click="isShowFollowingModal = true"
                 >{{ following.length }}</span
@@ -121,6 +136,12 @@ onMounted(async () => {
             </p>
             <p class="pl-2">
               <span
+                v-if="!follower.length"
+                class="cursor-pointer hover:text-blue-400"
+                >0</span
+              >
+              <span
+                v-else
                 class="cursor-pointer hover:text-blue-400"
                 @click="isShowFollowerModal = true"
                 >{{ follower.length }}</span
@@ -237,9 +258,12 @@ onMounted(async () => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirect(follow.user._id)"
+        >
+          {{ follow.user.name }}
+        </div>
         <button
           v-if="judgeFollowing(follow.user._id)"
           type="button"
@@ -277,9 +301,12 @@ onMounted(async () => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirect(follow.user._id)"
+        >
+          {{ follow.user.name }}
+        </div>
 
         <button
           v-if="judgeFollowing(follow.user._id)"

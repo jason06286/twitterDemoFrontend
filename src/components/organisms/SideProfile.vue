@@ -38,6 +38,13 @@ const judgeFollowing = (id) => {
         >
           <h3>關注數</h3>
           <p
+            v-if="!followStore.follower.length"
+            class="cursor-pointer hover:text-blue-400"
+          >
+            0
+          </p>
+          <p
+            v-else
             class="cursor-pointer hover:text-blue-400"
             @click="isShowFollowerModal = true"
           >
@@ -47,6 +54,13 @@ const judgeFollowing = (id) => {
         <div class="px-5 py-2 text-center text-sm text-gray-400">
           <h3>追蹤中</h3>
           <p
+            v-if="!followStore.following.length"
+            class="cursor-pointer hover:text-blue-400"
+          >
+            0
+          </p>
+          <p
+            v-else
             class="cursor-pointer hover:text-blue-400"
             @click="isShowFollowingModal = true"
           >

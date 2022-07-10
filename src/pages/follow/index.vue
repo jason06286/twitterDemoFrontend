@@ -60,7 +60,7 @@ onMounted(async () => {
               </div>
               <div class="ml-3 space-y-1 text-xs sm:text-sm">
                 <router-link
-                  :to="`/auth/profile/${follow.user._id}`"
+                  :to="`/profile/${follow.user._id}`"
                   class="text-base font-bold sm:text-xl"
                 >
                   {{ follow.user.name }}
