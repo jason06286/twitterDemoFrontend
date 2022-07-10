@@ -7,6 +7,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     'Bi:bellFill': typeof import('~icons/bi/bell-fill')['default']
     'Bi:threeDotsVertical': typeof import('~icons/bi/three-dots-vertical')['default']
+    'Carbon:checkmarkFilled': typeof import('~icons/carbon/checkmark-filled')['default']
     'Carbon:userProfile': typeof import('~icons/carbon/user-profile')['default']
     Comment: typeof import('./components/organisms/Comment.vue')['default']
     DeletePostModal: typeof import('./components/organisms/DeletePostModal.vue')['default']
@@ -43,6 +44,7 @@ declare module '@vue/runtime-core' {
     'Ri:heart3Line': typeof import('~icons/ri/heart3-line')['default']
     'Ri:lockPasswordLine': typeof import('~icons/ri/lock-password-line')['default']
     'Ri:shareBoxLine': typeof import('~icons/ri/share-box-line')['default']
+    'Ri:user3Line': typeof import('~icons/ri/user3-line')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchInput: typeof import('./components/molecules/SearchInput.vue')['default']
