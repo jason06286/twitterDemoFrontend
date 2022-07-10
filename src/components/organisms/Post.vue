@@ -2,13 +2,13 @@
 import useUserStore from '@/stores/user';
 import useFollowStore from '@/stores/follow';
 
-import { formatTime } from '@/methods/formatTime';
+import { formatTime, formatContent } from '@/methods/format';
 import useLike from '@/methods/useLike';
 
 import { apiSharePost, apiDeletePost } from '@/api/api';
 
 const props = defineProps({
-  isUser: {
+  isAdmin: {
     type: Boolean,
     required: true,
   },
@@ -35,6 +35,8 @@ const droupActive = ref(false);
 const isShowLikeModal = ref(false);
 const isShowShareModal = ref(false);
 const isShowDeletePostModal = ref(false);
+
+const truncatePosition = ref('');
 
 const isLike = computed(() => {
   const filter = likes.value.filter((item) => item._id === userStore.user.id);
@@ -68,10 +70,6 @@ const droupHeight = computed(() => {
   return 'h-0';
 });
 
-watchEffect(() => {
-  likes.value = props.post.likes;
-});
-
 const calcLine = () => {
   if (!contentDom.value) return;
   const style = window.getComputedStyle(contentDom.value, null);
@@ -80,11 +78,34 @@ const calcLine = () => {
     Number(style.height.replace('px', '')) /
       Number(style.lineHeight.replace('px', ''))
   );
-
   if (row > 2) {
     isTruncate.value = true;
   }
 };
+
+const calcWidth = () => {
+  if (!contentDom.value) return;
+  if (!isTruncate.value) return;
+  const content =
+    props.post.share === undefined
+      ? props.post.content
+      : props.post.share.content;
+  const style = window.getComputedStyle(contentDom.value, null);
+  const fontSize = Number(style['font-size'].replace('px', ''));
+  const maxWidth = Number(style.width.replace('px', ''));
+  const row = content.split('\n');
+  const contentLength = row[1].length;
+  const position = fontSize * Number(contentLength);
+
+  truncatePosition.value =
+    fontSize * Number(contentLength) >= maxWidth
+      ? `right:0px`
+      : `left:${position}px`;
+};
+watchEffect(() => {
+  likes.value = props.post.likes;
+  calcWidth();
+});
 
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
@@ -111,6 +132,7 @@ const showDeletePostModal = () => {
 
 onMounted(async () => {
   try {
+    likes.value.length = 0;
     await getLikes(props.post._id);
   } catch (error) {
     console.log(error);
@@ -118,6 +140,10 @@ onMounted(async () => {
   nextTick(() => {
     calcLine();
   });
+  window.addEventListener('resize', calcWidth);
+});
+onUnmounted(() => {
+  window.removeEventListener('resize', calcWidth);
 });
 </script>
 <template>
@@ -128,11 +154,12 @@ onMounted(async () => {
         class="ml-3 flex items-center gap-3 self-end text-base font-bold text-gray-400 lg:text-xl"
       >
         <ic:round-share class="mr-2" />
-        <div class="h-8 w-8 overflow-hidden rounded-full">
+        <div class="h-10 w-10 overflow-hidden rounded-full">
           <img :src="props.post.user.photo" alt="avatar" />
         </div>
         <div>
-          {{ props.post.user.name }} <span class="text-gray-300/80">分享</span>
+          {{ props.post.user.name }}
+          <span class="text-base font-normal text-gray-300/80">share</span>
           <p class="text-sm text-gray-500">
             {{ formatTime(props.post.createdAt) }}
           </p>
@@ -145,7 +172,7 @@ onMounted(async () => {
         <div class="ml-2">
           <router-link
             class="font-bold hover:text-blue-400 md:text-xl"
-            :to="`/auth/profile/${props.post.user._id}`"
+            :to="`/profile/${props.post.user._id}`"
             >{{ props.post.user.name }}</router-link
           >
           <p class="text-sm text-gray-500">
@@ -155,7 +182,7 @@ onMounted(async () => {
       </div>
       <div class="relative ml-auto">
         <button
-          v-if="props.isUser"
+          v-if="props.isAdmin"
           type="button"
           class="px-2 py-2 hover:text-blue-300"
           @click="droupActive = !droupActive"
@@ -190,13 +217,13 @@ onMounted(async () => {
     <div class="border-b border-gray-700 pb-2">
       <div v-if="props.post.share" class="my-3 border-2 p-5">
         <div class="mb-5 flex border-b border-gray-700 pb-2">
-          <div class="h-8 w-8 overflow-hidden rounded-full md:h-10 md:w-10">
+          <div class="h-8 w-8 overflow-hidden rounded-full">
             <img :src="props.post.share.user.photo" alt="avatar" />
           </div>
           <div class="ml-2">
             <router-link
-              class="font-bold hover:text-blue-400 md:text-xl"
-              :to="`/auth/profile/${props.post.share.user._id}`"
+              class="font-bold hover:text-blue-400"
+              :to="`/profile/${props.post.share.user._id}`"
               >{{ props.post.share.user.name }}</router-link
             >
             <p class="text-sm text-gray-500">
@@ -209,11 +236,17 @@ onMounted(async () => {
           class="relative mb-5"
           :class="isTruncate && 'line-clamp-2 '"
         >
-          {{ props.post.share.content }}
+          <template v-if="props?.post?.share?.content">
+            <div
+              class="mb-5"
+              v-html="formatContent(props.post.share.content)"
+            ></div>
+          </template>
           <button
             v-if="isTruncate"
             type="button"
-            class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            class="absolute bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            :style="truncatePosition"
             @click="isTruncate = false"
           >
             ...顯示更多
@@ -243,11 +276,15 @@ onMounted(async () => {
           class="relative mb-5"
           :class="isTruncate && 'line-clamp-2 '"
         >
-          {{ props.post.content }}
+          <template v-if="props?.post?.content">
+            <div v-html="formatContent(props.post.content)"></div>
+          </template>
+
           <button
             v-if="isTruncate"
             type="button"
-            class="absolute right-0 bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            class="absolute bottom-0 cursor-pointer rounded-sm bg-black font-bold text-gray-600 hover:text-gray-300 hover:underline"
+            :style="truncatePosition"
             @click="isTruncate = false"
           >
             ...顯示更多
@@ -357,7 +394,7 @@ onMounted(async () => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="item.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/auth/profile/${item._id}`">{{
+        <router-link class="font-bold" :to="`/profile/${item._id}`">{{
           item.name
         }}</router-link>
         <button
@@ -395,7 +432,7 @@ onMounted(async () => {
         <div class="ml-2">
           <router-link
             class="font-bold hover:text-blue-400 md:text-xl"
-            :to="`/auth/profile/${props.post.user._id}`"
+            :to="`/profile/${props.post.user._id}`"
             >{{ props.post.user.name }}</router-link
           >
           <p class="text-sm text-gray-500">
@@ -404,9 +441,9 @@ onMounted(async () => {
         </div>
       </div>
       <div class="border-b border-gray-700 pb-2">
-        <div class="mb-5">
-          {{ props.post.content }}
-        </div>
+        <template v-if="props?.post?.content">
+          <div class="mb-5" v-html="formatContent(props.post.content)"></div>
+        </template>
         <div v-if="props.post.images.length" class="mb-5">
           <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
             <div

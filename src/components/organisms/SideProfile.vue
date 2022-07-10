@@ -4,6 +4,8 @@ import useFollowStore from '@/stores/follow';
 
 const emit = defineEmits(['publishPost']);
 
+const route = useRoute();
+
 const userStore = useUserStore();
 const followStore = useFollowStore();
 
@@ -24,7 +26,7 @@ const judgeFollowing = (id) => {
         <img :src="userStore.user.photo" alt="avatar" />
       </div>
       <router-link
-        :to="`/auth/profile/${userStore.user.id}`"
+        :to="`/profile/${userStore.user.id}`"
         class="my-3 text-2xl font-bold text-gray-400 hover:text-blue-400"
       >
         {{ userStore.user.name }}
@@ -56,16 +58,17 @@ const judgeFollowing = (id) => {
     <div class="mt-8 w-64 rounded-md bg-black p-9 shadow-md">
       <router-link
         class="confirm-btn mb-5"
-        :to="`/auth/profile/${userStore.user.id}`"
+        :to="`/profile/${userStore.user.id}`"
       >
         <teenyicons:user-solid class="text-slate-400" />
         <span class="ml-2">個人資料</span>
       </router-link>
-      <router-link class="confirm-btn mb-5" to="/auth/follow">
+      <router-link class="confirm-btn mb-5" to="/follow">
         <teenyicons:bell-solid class="text-yellow-400" />
         <span class="ml-2">追蹤名單</span>
       </router-link>
       <button
+        v-if="route.path !== '/follow'"
         class="confirm-btn group w-full bg-blue-900/50 hover:bg-yellow-400 hover:text-gray-800"
         type="button"
         @click="emit('publishPost')"
@@ -95,11 +98,9 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link
-          class="font-bold"
-          :to="`/auth/profile/${follow.user._id}`"
-          >{{ follow.user.name }}</router-link
-        >
+        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
+          follow.user.name
+        }}</router-link>
         <button
           v-if="judgeFollowing(follow.user._id)"
           type="button"
@@ -137,11 +138,9 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link
-          class="font-bold"
-          :to="`/auth/profile/${follow.user._id}`"
-          >{{ follow.user.name }}</router-link
-        >
+        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
+          follow.user.name
+        }}</router-link>
 
         <button
           type="button"

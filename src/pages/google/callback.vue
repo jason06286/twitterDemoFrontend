@@ -16,7 +16,7 @@ const setData = () => {
   const user = { name, id, photo, isThirdPartyLogin };
   store.setUser(user);
   console.log('store.user :>> ', store.user);
-  router.push('/auth/posts');
+  router.push('/');
 };
 
 onMounted(() => {

@@ -1,8 +1,41 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-// import { setupLayouts } from 'virtual:generated-layouts';
-import routes from 'virtual:generated-pages';
 
-// const routes = setupLayouts(generatedRoutes);
+import Home from '@/pages/index.vue';
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/profile/:id',
+    component: () => import('@/pages/profile/[id].vue'),
+  },
+  {
+    path: '/follow',
+    component: () => import('@/pages/follow/index.vue'),
+  },
+  {
+    path: '/register',
+    component: () => import('@/pages/register.vue'),
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/login.vue'),
+  },
+  {
+    path: '/google/callback',
+    component: () => import('@/pages/google/callback.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: {
+      name: 'Home',
+    },
+  },
+];
 const router = createRouter({
   history: createWebHashHistory(),
   routes,

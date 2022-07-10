@@ -1,7 +1,7 @@
 <script setup>
 import useUserStore from '@/stores/user';
 
-import { formatTime } from '@/methods/formatTime';
+import { formatTime } from '@/methods/format';
 import { apiGetComments, apiPostComment } from '@/api/api';
 
 const props = defineProps({
@@ -49,7 +49,7 @@ defineExpose({ comments, focusComment, openComment });
   <div v-if="isOpenComment" class="my-3">
     <div v-for="comment in comments" :key="comment._id" class="mb-3 flex">
       <router-link
-        :to="`/auth/profile/${comment.commenter._id}`"
+        :to="`/profile/${comment.commenter._id}`"
         class="mr-3 h-8 w-8 overflow-hidden rounded-full"
       >
         <img :src="comment.commenter.photo" alt="avatar" />
@@ -57,7 +57,7 @@ defineExpose({ comments, focusComment, openComment });
       <div class="rounded-lg bg-blue-900/50 px-3 py-2">
         <div class="flex justify-between">
           <router-link
-            :to="`/auth/profile/${comment.commenter._id}`"
+            :to="`/profile/${comment.commenter._id}`"
             class="mr-3 font-bold"
             >{{ comment.commenter.name }}</router-link
           >

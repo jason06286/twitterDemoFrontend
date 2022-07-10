@@ -34,7 +34,7 @@ const onSubmit = handleSubmit(async () => {
     const res = await apiLogin(user);
     const { token } = res.data.data;
     document.cookie = `twitterToken=${token}; expires=${date}; path=/`;
-    router.push('/auth');
+    router.push('/');
   } catch (error) {
     errorMessage.value = error.response.data.message;
   }

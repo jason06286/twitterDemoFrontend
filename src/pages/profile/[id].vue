@@ -5,7 +5,7 @@ import useProfilePostsStore from '@/stores/profilePosts';
 import useFollowStore from '@/stores/follow';
 import useUserStore from '@/stores/user';
 
-import { apiGetProfile } from '@/api/api';
+import { apiGetProfile, apiGetFollow } from '@/api/api';
 
 const route = useRoute();
 
@@ -15,8 +15,10 @@ const profilePostsStore = useProfilePostsStore();
 
 const userProfile = ref([]);
 
+const following = ref([]);
+const follower = ref([]);
 const isLoading = ref(false);
-const isUser = computed(() => route.params.id === userStore.user.id);
+const isAdmin = computed(() => route.params.id === userStore.user.id);
 
 const isShowAddPostModal = ref(false);
 const isShowEditPostModal = ref(false);
@@ -38,27 +40,44 @@ const getProfilePosts = async () => {
   isLoading.value = false;
 };
 
+const getFollow = async (id) => {
+  try {
+    const res = await apiGetFollow(id);
+    following.value = res.data.data.following;
+    follower.value = res.data.data.follower;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const init = async () => {
   isLoading.value = true;
   try {
     const res = await apiGetProfile(route.params.id);
     userProfile.value = res.data.data;
     await getProfilePosts();
+    await getFollow(route.params.id);
+    console.log('userStore.user.id :>> ', userStore.user.id);
+    await followStore.getFollow(userStore.user.id);
 
     console.log(res);
   } catch (error) {
     console.log(error);
   }
   window.scrollTo({
-    top: 0,
+    top: 500,
     left: 0,
     behavior: 'smooth',
   });
   isLoading.value = false;
 };
-
+watch(
+  () => route.params.id,
+  async () => {
+    window.location.reload();
+  }
+);
 onMounted(async () => {
-  await followStore.getFollow(route.params.id);
+  isLoading.value = true;
   await init();
 });
 </script>
@@ -96,7 +115,7 @@ onMounted(async () => {
               <span
                 class="cursor-pointer hover:text-blue-400"
                 @click="isShowFollowingModal = true"
-                >{{ followStore.following.length }}</span
+                >{{ following.length }}</span
               >
               人
             </p>
@@ -104,14 +123,14 @@ onMounted(async () => {
               <span
                 class="cursor-pointer hover:text-blue-400"
                 @click="isShowFollowerModal = true"
-                >{{ followStore.follower.length }}</span
+                >{{ follower.length }}</span
               >
               位追蹤者
             </p>
           </div>
         </div>
 
-        <div v-if="isUser" class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
+        <div v-if="isAdmin" class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
           <button type="button" class="confirm-btn bg-blue-900/50">
             <ic:round-edit class="mr-1" /> 編輯個人資料
           </button>
@@ -125,7 +144,7 @@ onMounted(async () => {
         </div>
         <div v-else class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
           <button
-            v-if="judgeFollowing(route.params.id)"
+            v-if="!judgeFollowing(route.params.id)"
             type="button"
             class="confirm-btn bg-blue-900/50"
             @click="followStore.toggleFollow(route.params.id)"
@@ -159,7 +178,7 @@ onMounted(async () => {
       </div>
       <div class="col-auto lg:col-span-4">
         <div
-          v-if="isUser"
+          v-if="isAdmin"
           class="mb-5 flex items-center rounded-md bg-black px-5 py-3"
         >
           <div
@@ -178,11 +197,11 @@ onMounted(async () => {
         </div>
         <div
           v-if="!profilePostsStore?.posts.length"
-          class="mb-5 flex items-center justify-center gap-3 rounded-md bg-black px-5 py-3 text-gray-400"
+          class="mb-5 flex items-center justify-center gap-3 rounded-md bg-black p-5 text-gray-400"
         >
           <p class="text-sm">沒有相關貼文，分享你發生的事!</p>
           <button
-            v-if="isUser"
+            v-if="isAdmin"
             type="button"
             class="confirm-btn bg-blue-900/50"
             @click="isShowAddPostModal = true"
@@ -194,7 +213,7 @@ onMounted(async () => {
           v-for="post in profilePostsStore?.posts"
           :key="post._id"
           :post="post"
-          :is-user="isUser"
+          :is-admin="isAdmin"
           @init="init"
           @showEditPostModal="showEditPostModal"
         />
@@ -211,18 +230,16 @@ onMounted(async () => {
     </div>
     <template v-else>
       <div
-        v-for="follow in followStore.follower"
+        v-for="follow in follower"
         :key="follow._id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link
-          class="font-bold"
-          :to="`/auth/profile/${follow.user._id}`"
-          >{{ follow.user.name }}</router-link
-        >
+        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
+          follow.user.name
+        }}</router-link>
         <button
           v-if="judgeFollowing(follow.user._id)"
           type="button"
@@ -253,25 +270,33 @@ onMounted(async () => {
     </div>
     <template v-else>
       <div
-        v-for="follow in followStore.following"
+        v-for="follow in following"
         :key="follow._id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link
-          class="font-bold"
-          :to="`/auth/profile/${follow.user._id}`"
-          >{{ follow.user.name }}</router-link
-        >
+        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
+          follow.user.name
+        }}</router-link>
 
         <button
+          v-if="judgeFollowing(follow.user._id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
           @click="followStore.toggleFollow(follow.user._id)"
         >
-          取消追蹤
+          <span>取消追蹤</span>
+        </button>
+        <button
+          v-else
+          type="button"
+          class="confirm-btn ml-auto"
+          :class="userStore.user.id === follow.user._id && 'hidden'"
+          @click="followStore.toggleFollow(follow.user._id)"
+        >
+          <span>追蹤</span>
         </button>
       </div>
     </template>

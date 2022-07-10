@@ -11,8 +11,8 @@ const userStore = useUserStore();
 
 const { images, errormsg, uploadFile, deleteImage } = useImage();
 const isShowCancelModal = ref(false);
-const content = ref('');
 const isLoading = ref(false);
+const content = ref('');
 
 const doUploadFile = async (e) => {
   isLoading.value = true;

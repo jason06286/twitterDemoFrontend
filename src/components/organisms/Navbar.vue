@@ -30,7 +30,7 @@ const logout = () => {
     <router-link
       to="/auth/posts"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts' && 'border-b-4 text-teal-50'"
+      :class="route.path === '/' && 'border-b-4 text-teal-50'"
     >
       <template v-if="route.path !== '/auth/posts'">
         <teenyicons:home-outline class="absolute" />
@@ -44,9 +44,9 @@ const logout = () => {
       >
     </router-link>
     <router-link
-      to="/"
+      to="/follow"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/follow' && 'border-b-4 border-teal-50'"
+      :class="route.path === '/follow' && 'border-b-4 border-teal-50'"
     >
       <template v-if="route.path !== '/auth/follow'">
         <teenyicons:bell-outline class="absolute" />
@@ -60,9 +60,9 @@ const logout = () => {
       >
     </router-link>
     <router-link
-      :to="`/auth/profile/${userStore.user.id}`"
+      :to="`/profile/${userStore.user.id}`"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/auth/posts' && 'border-b-4  border-teal-50'"
+      :class="route.path === '/profile' && 'border-b-4  border-teal-50'"
     >
       <template v-if="route.path !== '/auth'">
         <teenyicons:user-outline class="absolute" />
