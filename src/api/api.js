@@ -35,6 +35,9 @@ baseRequest = axios.create({
 
 export const apiGetUsers = () => baseRequest.get('user');
 export const apiGetProfile = (id) => baseRequest.get(`user/profile/${id}`);
+export const apiResetPassword = (data) =>
+  baseRequest.patch(`user/updatePassword`, data);
+
 export const apiGetProfilePosts = (id) => baseRequest.get(`posts/user/${id}`);
 export const apiGetPosts = () => baseRequest.get('posts');
 export const apiAddPost = (data) => baseRequest.post(`post`, data);

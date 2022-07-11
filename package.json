@@ -16,7 +16,8 @@
     "vue": "^3.2.37",
     "vue-easy-lightbox": "^1.5.0",
     "vue-final-modal": "^3.4.4",
-    "vue-router": "^4.0.16"
+    "vue-router": "^4.0.16",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@iconify/json": "^2.1.68",

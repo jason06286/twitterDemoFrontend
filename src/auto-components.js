@@ -7,7 +7,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     'Bi:bellFill': typeof import('~icons/bi/bell-fill')['default']
     'Bi:threeDotsVertical': typeof import('~icons/bi/three-dots-vertical')['default']
-    'Carbon:checkmarkFilled': typeof import('~icons/carbon/checkmark-filled')['default']
     'Carbon:userProfile': typeof import('~icons/carbon/user-profile')['default']
     Comment: typeof import('./components/organisms/Comment.vue')['default']
     DeletePostModal: typeof import('./components/organisms/DeletePostModal.vue')['default']
@@ -35,6 +34,7 @@ declare module '@vue/runtime-core' {
     Navbar: typeof import('./components/organisms/Navbar.vue')['default']
     Post: typeof import('./components/organisms/Post.vue')['default']
     PublishPostModal: typeof import('./components/organisms/PublishPostModal.vue')['default']
+    ResetPasswordModal: typeof import('./components/organisms/resetPasswordModal.vue')['default']
     'Ri:chat1Fill': typeof import('~icons/ri/chat1-fill')['default']
     'Ri:chat1Line': typeof import('~icons/ri/chat1-line')['default']
     'Ri:errorWarningFill': typeof import('~icons/ri/error-warning-fill')['default']
@@ -44,7 +44,6 @@ declare module '@vue/runtime-core' {
     'Ri:heart3Line': typeof import('~icons/ri/heart3-line')['default']
     'Ri:lockPasswordLine': typeof import('~icons/ri/lock-password-line')['default']
     'Ri:shareBoxLine': typeof import('~icons/ri/share-box-line')['default']
-    'Ri:user3Line': typeof import('~icons/ri/user3-line')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchInput: typeof import('./components/molecules/SearchInput.vue')['default']

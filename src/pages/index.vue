@@ -64,12 +64,12 @@ onMounted(async () => {
       <div class="col-auto ml-0 sm:mt-8 lg:col-span-2 lg:ml-5 xl:ml-0">
         <div class="mb-5 flex items-center rounded-md bg-black px-5 py-3">
           <div
-            class="mr-3 h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12"
+            class="mr-3 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full md:h-12 md:w-12"
           >
             <img :src="userStore.user.photo" alt="avatar" />
           </div>
           <div
-            class="group w-full cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
+            class="group w-full flex-shrink cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
             @click="isShowAddPostModal = true"
           >
             <p class="font-semibold text-gray-400 group-hover:text-blue-500">

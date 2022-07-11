@@ -25,6 +25,7 @@ const isShowAddPostModal = ref(false);
 const isShowEditPostModal = ref(false);
 const isShowFollowingModal = ref(false);
 const isShowFollowerModal = ref(false);
+const isShowResetPasswordModal = ref(false);
 
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
@@ -159,8 +160,9 @@ onMounted(async () => {
             v-if="!userStore.user.data.isThirdPartyLogin"
             type="button"
             class="confirm-btn bg-gray-400/60"
+            @click="isShowResetPasswordModal = true"
           >
-            <ic:round-lock class="mr-1" /> 修改密碼
+            <ic:round-lock class="mr-1" /> 重設密碼
           </button>
         </div>
         <div v-else class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
@@ -203,12 +205,12 @@ onMounted(async () => {
           class="mb-5 flex items-center rounded-md bg-black px-5 py-3"
         >
           <div
-            class="mr-3 h-10 w-10 overflow-hidden rounded-full md:h-12 md:w-12"
+            class="mr-3 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full md:h-12 md:w-12"
           >
             <img :src="userProfile?.user?.photo" alt="avatar" />
           </div>
           <div
-            class="group w-full cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
+            class="group w-full flex-shrink cursor-pointer rounded-full bg-blue-900/50 px-4 py-1 hover:bg-blue-500/40 md:py-3 md:px-5"
             @click="isShowAddPostModal = true"
           >
             <p class="font-semibold text-gray-400 group-hover:text-blue-500">
@@ -339,6 +341,7 @@ onMounted(async () => {
     >
     </EditPostModal>
   </template>
+  <resetPasswordModal v-model="isShowResetPasswordModal" />
 </template>
 <style scoped>
 .bg-ig {

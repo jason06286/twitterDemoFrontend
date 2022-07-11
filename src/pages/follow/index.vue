@@ -3,7 +3,7 @@ import useUserStore from '@/stores/user';
 
 import useFollowStore from '@/stores/follow';
 
-import { formatFollowTime, formatTime } from '@/methods/format';
+import { formatFollowTime, formatFollowDays } from '@/methods/format';
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
@@ -66,7 +66,7 @@ onMounted(async () => {
                   {{ follow.user.name }}
                 </router-link>
 
-                <p>您已追蹤 {{ formatTime(follow.followAt) }}</p>
+                <p>您已追蹤 {{ formatFollowDays(follow.followAt) }}</p>
                 <p class="text-gray-500">
                   追蹤時間: {{ formatFollowTime(follow.followAt) }}
                 </p>

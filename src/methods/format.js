@@ -11,6 +11,7 @@ const formatTime = (time) => {
 
 const formatFollowTime = (time) =>
   moment(time).tz('Asia/Taipei').format('YYYY-MM-DD HH:mm');
+const formatFollowDays = (time) => moment(time).fromNow();
 
 const formatContent = (content) => {
   if (content === '') return;
@@ -18,4 +19,4 @@ const formatContent = (content) => {
   return res;
 };
 
-export { formatTime, formatFollowTime, formatContent };
+export { formatTime, formatFollowTime, formatFollowDays, formatContent };
