@@ -17,6 +17,18 @@ export default function useImage() {
       console.log(error);
     }
   };
+  const uploadImg = async (data) => {
+    const file = new File([data], '123.png', { type: 'image/png' });
+    const formData = new FormData();
+    formData.append('file-to-upload', file);
+    try {
+      const res = await apiUploadFile(formData);
+      return res;
+    } catch (error) {
+      errormsg.value = error.response.data.message;
+      console.log(error);
+    }
+  };
 
   const deleteImage = async (index) => {
     images.value.splice(index, 1);
@@ -25,6 +37,7 @@ export default function useImage() {
   return {
     images,
     uploadFile,
+    uploadImg,
     deleteImage,
     errormsg,
   };

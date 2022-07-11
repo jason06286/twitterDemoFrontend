@@ -58,3 +58,6 @@ export const apiPostComment = (id, data) =>
 export const apiSharePost = (id) => baseRequest.post(`post/share/${id}`);
 
 export const apiUploadFile = (data) => baseRequest.post('uploadImage', data);
+
+export const apiUploadImage = (data) =>
+  baseRequest.post('uploadImage/base64', data);

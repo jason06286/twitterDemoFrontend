@@ -20,6 +20,9 @@ const following = ref([]);
 const follower = ref([]);
 const isLoading = ref(false);
 const isAdmin = computed(() => route.params.id === userStore.user.id);
+const coverImage = computed(() =>
+  isAdmin ? userStore.user.coverImage : userProfile.coverImage
+);
 
 const isShowAddPostModal = ref(false);
 const isShowEditPostModal = ref(false);
@@ -83,24 +86,29 @@ const init = async () => {
 watch(
   () => route.params.id,
   async () => {
-    init();
+    await init();
   }
 );
 onMounted(async () => {
   isLoading.value = true;
+  console.log('isAdmin :>> ', isAdmin.value);
   await init();
 });
 </script>
-<template>
+<template v-if="userProfile">
   <Loading :is-loading="isLoading" />
   <Navbar />
   <div
     class="relative h-auto bg-cover bg-center shadow-md before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/50 before:via-black/90 before:to-black sm:mt-[48px]"
-    :style="{ backgroundImage: 'url(' + userProfile?.coverImage + ')' }"
+    :style="{
+      backgroundImage: 'url(' + coverImage + ')',
+    }"
   >
     <div class="container m-auto">
       <div
-        :style="{ backgroundImage: 'url(' + userProfile?.coverImage + ')' }"
+        :style="{
+          backgroundImage: 'url(' + coverImage + ')',
+        }"
         class="relative h-[150px] w-full bg-cover bg-center before:absolute before:inset-0 before:bg-black/10 sm:h-[300px] lg:h-[400px]"
       ></div>
       <div
@@ -110,7 +118,7 @@ onMounted(async () => {
           class="-mt-12 h-32 w-32 overflow-hidden rounded-full border-4 border-black"
         >
           <img
-            :src="userProfile?.user?.photo"
+            :src="isAdmin ? userStore?.user?.photo : userProfile?.user?.photo"
             alt="avatar"
             class="block h-auto w-full"
           />

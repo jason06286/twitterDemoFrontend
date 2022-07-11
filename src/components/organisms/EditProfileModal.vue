@@ -3,32 +3,89 @@ import { VueFinalModal, $vfm } from 'vue-final-modal';
 import useImage from '@/methods/useImage';
 import useUserStore from '@/stores/user';
 
-import { apiEditProfile, apiGetProfile } from '@/api/api';
+import { apiEditProfile } from '@/api/api';
 
 const userStore = useUserStore();
 
-const isShowCancelModal = ref(false);
+const { uploadImg, uploadFile } = useImage();
+
+const cropCoverImage = ref();
+const cropAvatar = ref();
+
 const errorMessage = ref('');
-const isLoading = ref(false);
 const name = ref('');
 const description = ref('');
 const coverImage = ref('');
 const photo = ref('');
-const isCoverImageActive = ref(false);
 
-const { uploadFile } = useImage();
+const isDisabled = ref(false);
+const isShowCancelModal = ref(false);
+const isLoading = ref(false);
+const isCoverImageActive = ref(false);
+const isAvatarActive = ref(false);
 
 const editCoverImage = async (e) => {
   isLoading.value = true;
   try {
     const res = await uploadFile(e.target);
     coverImage.value = res.data.data.imgUrl;
+    isCoverImageActive.value = true;
   } catch (error) {
     console.log(error);
   }
 
   isLoading.value = false;
 };
+const editAvatar = async (e) => {
+  isLoading.value = true;
+  try {
+    const res = await uploadFile(e.target);
+    photo.value = res.data.data.imgUrl;
+    isAvatarActive.value = true;
+  } catch (error) {
+    console.log(error);
+  }
+
+  isLoading.value = false;
+};
+const cropedCoverImage = () => {
+  console.log('cropCoverImage :>> ', cropCoverImage.value);
+  cropCoverImage.value.preview();
+};
+const cropedAvatar = () => {
+  console.log('cropCoverImage :>> ', cropCoverImage.value);
+  cropAvatar.value.preview();
+};
+const confirmCropedCoverImage = async (data) => {
+  try {
+    const res = await uploadImg(data);
+    coverImage.value = res.data.data.imgUrl;
+    isCoverImageActive.value = false;
+    console.log('res :>> ', res);
+  } catch (error) {
+    console.log(error);
+  }
+};
+const confirmCropedAvatar = async (data) => {
+  try {
+    const res = await uploadImg(data);
+    photo.value = res.data.data.imgUrl;
+    isAvatarActive.value = false;
+    console.log('res :>> ', res);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+watch(name, () => {
+  if (!name.value) {
+    errorMessage.value = '暱稱不得為空';
+    isDisabled.value = true;
+  } else {
+    errorMessage.value = '';
+    isDisabled.value = false;
+  }
+});
 
 const reStart = () => {
   name.value = userStore.user.name;
@@ -36,19 +93,30 @@ const reStart = () => {
   coverImage.value = userStore.user.coverImage;
   photo.value = userStore.user.photo;
   errorMessage.value = '';
+  isCoverImageActive.value = false;
+  isAvatarActive.value = false;
   $vfm.hideAll();
 };
 
-onMounted(async () => {
-  name.value = userStore.user.name;
-  description.value = userStore.user.description;
-  coverImage.value = userStore.user.coverImage;
-  photo.value = userStore.user.photo;
+const confirmEditProfile = async () => {
   try {
+    const res = await apiEditProfile({
+      name: name.value,
+      photo: photo.value,
+      coverImage: coverImage.value,
+      description: description.value,
+    });
+    await userStore.setUser(userStore.user.id);
+    console.log('userStore.user :>> ', userStore.user);
     console.log('res :>> ', res);
+    reStart();
   } catch (error) {
     console.log(error);
   }
+};
+
+onMounted(async () => {
+  reStart();
 });
 </script>
 <template>
@@ -64,8 +132,31 @@ onMounted(async () => {
         <ic:round-close />
       </button>
       <h2 class="ml-8 font-bold">編輯個人資料</h2>
-      <button type="button" class="confirm-btn ml-auto bg-blue-900/50">
+      <p class="ml-auto text-red-600">{{ errorMessage }}</p>
+      <button
+        v-if="!isCoverImageActive && !isAvatarActive"
+        type="button"
+        class="confirm-btn ml-auto bg-blue-900/50"
+        :disabled="isDisabled"
+        @click="confirmEditProfile"
+      >
         儲存
+      </button>
+      <button
+        v-if="isCoverImageActive"
+        type="button"
+        class="confirm-btn ml-auto bg-blue-900/50"
+        @click="cropedCoverImage"
+      >
+        截圖
+      </button>
+      <button
+        v-if="isAvatarActive"
+        type="button"
+        class="confirm-btn ml-auto bg-blue-900/50"
+        @click="cropedAvatar"
+      >
+        截圖
       </button>
     </div>
     <div class="relative mb-5 w-[500px] overflow-hidden">
@@ -104,9 +195,27 @@ onMounted(async () => {
         </button>
       </div>
       <div
-        class="absolute inset-0 z-10 w-[500px] bg-blue-500 transition-all duration-200"
+        class="absolute inset-0 z-10 w-[500px] transition-all duration-200"
         :class="isCoverImageActive ? 'translate-x-0' : 'translate-x-full'"
-      ></div>
+      >
+        <Cropper
+          ref="cropCoverImage"
+          :image="coverImage"
+          :fixed-number="[16, 9]"
+          @confirm-croped-cover-image="confirmCropedCoverImage"
+        />
+      </div>
+      <div
+        class="absolute inset-0 z-10 w-[500px] transition-all duration-200"
+        :class="isAvatarActive ? 'translate-x-0' : 'translate-x-full'"
+      >
+        <Cropper
+          ref="cropAvatar"
+          :image="photo"
+          :fixed-number="[1, 1]"
+          @confirm-croped-cover-image="confirmCropedAvatar"
+        />
+      </div>
       <div class="p-5">
         <div
           class="-mt-20 flex h-32 w-32 items-center justify-center rounded-full border-4 border-black bg-blue-300 bg-cover bg-center"
@@ -123,6 +232,7 @@ onMounted(async () => {
             type="file"
             class="hidden"
             accept="image/png, image/jpeg"
+            @change="editAvatar($event)"
           />
         </div>
         <div class="mt-5">

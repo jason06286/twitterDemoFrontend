@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
     'Bi:threeDotsVertical': typeof import('~icons/bi/three-dots-vertical')['default']
     'Carbon:userProfile': typeof import('~icons/carbon/user-profile')['default']
     Comment: typeof import('./components/organisms/Comment.vue')['default']
+    Cropper: typeof import('./components/molecules/Cropper.vue')['default']
     DeletePostModal: typeof import('./components/organisms/DeletePostModal.vue')['default']
     DotLine: typeof import('./components/atoms/DotLine.vue')['default']
     DroupDwonButton: typeof import('./components/molecules/DroupDwonButton.vue')['default']
