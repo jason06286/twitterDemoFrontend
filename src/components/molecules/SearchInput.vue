@@ -6,6 +6,8 @@ const router = useRouter();
 const searchWord = ref('');
 const users = ref([]);
 
+const isOpen = ref(false);
+
 const filterUsers = computed(() => {
   if (!searchWord.value) {
     return [];
@@ -16,6 +18,7 @@ const filterUsers = computed(() => {
 const goSearching = (id = '') => {
   if (!id) return;
   router.push(`/profile/${id}`);
+  isOpen.value = false;
 };
 
 onMounted(async () => {
@@ -26,8 +29,6 @@ onMounted(async () => {
     console.log(error);
   }
 });
-
-const isOpen = ref(false);
 </script>
 
 <template>

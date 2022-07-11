@@ -78,7 +78,7 @@ const publishPost = async () => {
     </button>
     <div class="flex w-[300px] p-1 sm:w-[500px]">
       <div class="mr-2 h-12 w-12 overflow-hidden rounded-full">
-        <img :src="userStore.user.photo" alt="avator" />
+        <img :src="userStore.user.photo" alt="avatar" />
       </div>
       <div class="w-full">
         <textarea

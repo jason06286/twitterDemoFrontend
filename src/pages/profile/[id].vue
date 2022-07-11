@@ -26,6 +26,7 @@ const isShowEditPostModal = ref(false);
 const isShowFollowingModal = ref(false);
 const isShowFollowerModal = ref(false);
 const isShowResetPasswordModal = ref(false);
+const isShowEditProfileModal = ref(false);
 
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
@@ -61,11 +62,10 @@ const init = async () => {
   isLoading.value = true;
   try {
     const res = await apiGetProfile(route.params.id);
+
     userProfile.value = res.data.data;
-    console.log('userProfile.value :>> ', userProfile.value);
-    console.log('1 :>> ', '1');
+
     await getProfilePosts(userProfile.value.user._id);
-    console.log('profilePostsStore.posts :>> ', profilePostsStore.posts);
     await getFollow(route.params.id);
     await followStore.getFollow(userStore.user.id);
 
@@ -107,7 +107,7 @@ onMounted(async () => {
         class="relative flex flex-col items-center justify-center px-5 py-5 lg:flex-row"
       >
         <div
-          class="-mt-12 h-32 w-32 overflow-hidden rounded-full border-4 border-slate-300"
+          class="-mt-12 h-32 w-32 overflow-hidden rounded-full border-4 border-black"
         >
           <img
             :src="userProfile?.user?.photo"
@@ -153,11 +153,15 @@ onMounted(async () => {
         </div>
 
         <div v-if="isAdmin" class="my-5 flex gap-3 lg:my-0 lg:ml-auto">
-          <button type="button" class="confirm-btn bg-blue-900/50">
+          <button
+            type="button"
+            class="confirm-btn bg-blue-900/50"
+            @click="isShowEditProfileModal = true"
+          >
             <ic:round-edit class="mr-1" /> 編輯個人資料
           </button>
           <button
-            v-if="!userStore.user.data.isThirdPartyLogin"
+            v-if="!userStore.user.isThirdPartyLogin"
             type="button"
             class="confirm-btn bg-gray-400/60"
             @click="isShowResetPasswordModal = true"
@@ -341,7 +345,8 @@ onMounted(async () => {
     >
     </EditPostModal>
   </template>
-  <resetPasswordModal v-model="isShowResetPasswordModal" />
+  <ResetPasswordModal v-model="isShowResetPasswordModal" />
+  <EditProfileModal v-model="isShowEditProfileModal" />
 </template>
 <style scoped>
 .bg-ig {

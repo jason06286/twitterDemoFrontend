@@ -35,6 +35,7 @@ baseRequest = axios.create({
 
 export const apiGetUsers = () => baseRequest.get('user');
 export const apiGetProfile = (id) => baseRequest.get(`user/profile/${id}`);
+export const apiEditProfile = (data) => baseRequest.patch(`user/profile`, data);
 export const apiResetPassword = (data) =>
   baseRequest.patch(`user/updatePassword`, data);
 

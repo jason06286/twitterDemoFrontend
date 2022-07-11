@@ -26,7 +26,7 @@ const checkStatus = async () => {
     setToken();
     const res = await apiCheckStatus();
     if (res.data.status === 'success') {
-      userStore.setUser(res.data.data.user);
+      userStore.setUser(res.data.data.user._id);
     }
   } catch (error) {
     router.push('/login');
@@ -51,7 +51,7 @@ const init = async () => {
 };
 
 onMounted(async () => {
-  checkStatus();
+  await checkStatus();
   await init();
 });
 </script>
