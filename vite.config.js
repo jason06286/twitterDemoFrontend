@@ -47,7 +47,7 @@ export default defineConfig({
     },
   },
   build: {
-    minify: env.mode !== 'development',
-    cssCodeSplit: env.mode === 'development' ? false : undefined,
+    minify: true,
+    cssCodeSplit: true,
   },
 });
