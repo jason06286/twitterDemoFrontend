@@ -52,10 +52,10 @@ defineExpose({ comments, focusComment, openComment });
 </script>
 <template>
   <div v-if="isOpenComment" class="my-3">
-    <div v-for="comment in comments" :key="comment._id" class="mb-3 flex">
+    <div v-for="comment in comments" :key="comment.id" class="mb-3 flex">
       <div
         class="mr-3 h-8 w-8 cursor-pointer overflow-hidden rounded-full"
-        @click="redirectLink(`/profile/${comment.commenter._id}`)"
+        @click="redirectLink(`/profile/${comment.commenter.id}`)"
       >
         <img :src="comment.commenter.photo" alt="avatar" />
       </div>
@@ -63,7 +63,7 @@ defineExpose({ comments, focusComment, openComment });
         <div class="flex justify-between">
           <div
             class="mr-3 cursor-pointer font-bold"
-            @click="redirectLink(`/profile/${comment.commenter._id}`)"
+            @click="redirectLink(`/profile/${comment.commenter.id}`)"
           >
             {{ comment.commenter.name }}
           </div>
@@ -91,13 +91,13 @@ defineExpose({ comments, focusComment, openComment });
         type="text"
         class="ml-3 mr-auto w-full border-none bg-transparent py-0.5 focus:outline-none"
         placeholder="留言..."
-        @keyup.enter="postComment(props.post._id)"
+        @keyup.enter="postComment(props.post.id)"
       />
       <button
         type="button"
         class="mx-1 flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-800 to-slate-600 px-3 text-sm text-gray-300 transition-all duration-200 hover:bg-gradient-to-tr hover:from-slate-400 hover:to-blue-700"
         :disabled="isLoading"
-        @click="postComment(props.post._id)"
+        @click="postComment(props.post.id)"
       >
         <span>留言</span>
       </button>
