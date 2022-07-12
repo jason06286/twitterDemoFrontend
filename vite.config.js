@@ -46,4 +46,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    minify: env.mode !== 'development',
+    cssCodeSplit: env.mode === 'development' ? false : undefined,
+  },
 });
