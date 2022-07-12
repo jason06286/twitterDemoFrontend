@@ -28,6 +28,7 @@ const userStore = useUserStore();
 const followStore = useFollowStore();
 
 const route = useRoute();
+const router = useRouter();
 
 const { likes, getLikes, toggleLikes } = useLike();
 
@@ -112,7 +113,9 @@ watchEffect(() => {
   likes.value = props.post.likes;
   calcWidth();
 });
-
+const redirectLink = (url) => {
+  router.push(url);
+};
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
   return filter.length;
@@ -190,11 +193,12 @@ onUnmounted(() => {
           <img :src="post.user.photo" alt="avatar" />
         </div>
         <div class="ml-2">
-          <router-link
-            class="font-bold hover:text-blue-400 md:text-xl"
-            :to="`/profile/${props.post.user._id}`"
-            >{{ props.post.user.name }}</router-link
+          <div
+            class="cursor-pointer font-bold hover:text-blue-400 md:text-xl"
+            @click="redirectLink(`/profile/${props.post.user._id}`)"
           >
+            {{ props.post.user.name }}
+          </div>
           <p class="text-sm text-gray-500">
             {{ formatTime(props.post.createdAt) }}
           </p>
@@ -241,11 +245,12 @@ onUnmounted(() => {
             <img :src="props.post.share.user.photo" alt="avatar" />
           </div>
           <div class="ml-2">
-            <router-link
-              class="font-bold hover:text-blue-400"
-              :to="`/profile/${props.post.share.user._id}`"
-              >{{ props.post.share.user.name }}</router-link
+            <div
+              class="cursor-pointer font-bold hover:text-blue-400"
+              @click="redirectLink(`/profile/${props.post.share.user._id}`)"
             >
+              {{ props.post.share.user.name }}
+            </div>
             <p class="text-sm text-gray-500">
               {{ formatTime(props.post.share.createdAt) }}
             </p>
@@ -414,9 +419,12 @@ onUnmounted(() => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="item.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/profile/${item._id}`">{{
-          item.name
-        }}</router-link>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirectLink(`/profile/${item._id}`)"
+        >
+          {{ item.name }}
+        </div>
         <button
           v-if="judgeFollowing(item._id)"
           type="button"
@@ -450,11 +458,12 @@ onUnmounted(() => {
           <img :src="post.user.photo" alt="avatar" />
         </div>
         <div class="ml-2">
-          <router-link
-            class="font-bold hover:text-blue-400 md:text-xl"
-            :to="`/profile/${props.post.user._id}`"
-            >{{ props.post.user.name }}</router-link
+          <div
+            class="cursor-pointer font-bold hover:text-blue-400 md:text-xl"
+            @click="redirectLink(`/profile/${props.post.user._id}`)"
           >
+            {{ props.post.user.name }}
+          </div>
           <p class="text-sm text-gray-500">
             {{ formatTime(props.post.createdAt) }}
           </p>

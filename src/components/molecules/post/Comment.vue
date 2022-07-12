@@ -13,6 +13,8 @@ const props = defineProps({
 
 const userStore = useUserStore();
 
+const router = useRouter();
+
 const commentDom = ref();
 
 const comments = ref([]);
@@ -24,6 +26,9 @@ watchEffect(() => {
   comments.value = props.post.comments;
 });
 
+const redirectLink = (url) => {
+  router.push(url);
+};
 const focusComment = () => {
   commentDom.value.focus();
 };
@@ -48,19 +53,20 @@ defineExpose({ comments, focusComment, openComment });
 <template>
   <div v-if="isOpenComment" class="my-3">
     <div v-for="comment in comments" :key="comment._id" class="mb-3 flex">
-      <router-link
-        :to="`/profile/${comment.commenter._id}`"
-        class="mr-3 h-8 w-8 overflow-hidden rounded-full"
+      <div
+        class="mr-3 h-8 w-8 cursor-pointer overflow-hidden rounded-full"
+        @click="redirectLink(`/profile/${comment.commenter._id}`)"
       >
         <img :src="comment.commenter.photo" alt="avatar" />
-      </router-link>
+      </div>
       <div class="rounded-lg bg-blue-900/50 px-3 py-2">
         <div class="flex justify-between">
-          <router-link
-            :to="`/profile/${comment.commenter._id}`"
-            class="mr-3 font-bold"
-            >{{ comment.commenter.name }}</router-link
+          <div
+            class="mr-3 cursor-pointer font-bold"
+            @click="redirectLink(`/profile/${comment.commenter._id}`)"
           >
+            {{ comment.commenter.name }}
+          </div>
           <p class="text-sm text-gray-600">
             {{ formatTime(comment.createdAt) }}
           </p>

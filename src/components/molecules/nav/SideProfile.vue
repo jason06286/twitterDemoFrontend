@@ -5,6 +5,7 @@ import useFollowStore from '@/stores/follow';
 const emit = defineEmits(['publishPost']);
 
 const route = useRoute();
+const router = useRouter();
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
@@ -12,6 +13,9 @@ const followStore = useFollowStore();
 const isShowFollowingModal = ref(false);
 const isShowFollowerModal = ref(false);
 
+const redirectLink = (url) => {
+  router.push(url);
+};
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user._id === id);
   return filter.length;
@@ -25,12 +29,12 @@ const judgeFollowing = (id) => {
       <div class="h-16 w-16 overflow-hidden rounded-full">
         <img :src="userStore.user.photo" alt="avatar" />
       </div>
-      <router-link
-        :to="`/profile/${userStore.user.id}`"
-        class="my-3 text-2xl font-bold text-gray-400 hover:text-blue-400"
+      <div
+        class="my-3 cursor-pointer text-2xl font-bold text-gray-400 hover:text-blue-400"
+        @click="redirectLink(`/profile/${userStore.user.id}`)"
       >
         {{ userStore.user.name }}
-      </router-link>
+      </div>
       <DotLine />
       <div class="grid w-full grid-cols-2">
         <div
@@ -70,17 +74,17 @@ const judgeFollowing = (id) => {
       </div>
     </div>
     <div class="mt-8 w-64 rounded-md bg-black p-9 shadow-md">
-      <router-link
+      <div
         class="confirm-btn mb-5"
-        :to="`/profile/${userStore.user.id}`"
+        @click="redirectLink(`/profile/${userStore.user.id}`)"
       >
         <teenyicons:user-solid class="text-slate-400" />
         <span class="ml-2">個人資料</span>
-      </router-link>
-      <router-link class="confirm-btn mb-5" to="/follow">
+      </div>
+      <div class="confirm-btn mb-5" @click="redirectLink(`/follow`)">
         <teenyicons:bell-solid class="text-yellow-400" />
         <span class="ml-2">追蹤名單</span>
-      </router-link>
+      </div>
       <button
         v-if="route.path !== '/follow'"
         class="confirm-btn group w-full bg-blue-900/50 hover:bg-yellow-400 hover:text-gray-800"
@@ -112,9 +116,12 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirectLink(`/profile/${follow.user._id}`)"
+        >
+          {{ follow.user.name }}
+        </div>
         <button
           v-if="judgeFollowing(follow.user._id)"
           type="button"
@@ -152,9 +159,12 @@ const judgeFollowing = (id) => {
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <router-link class="font-bold" :to="`/profile/${follow.user._id}`">{{
-          follow.user.name
-        }}</router-link>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirectLink(`/profile/${follow.user._id}`)"
+        >
+          {{ follow.user.name }}
+        </div>
 
         <button
           type="button"

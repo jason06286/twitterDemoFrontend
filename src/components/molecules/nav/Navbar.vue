@@ -2,11 +2,17 @@
 import useUserStore from '@/stores/user';
 
 const route = useRoute();
+const router = useRouter();
 
 const userStore = useUserStore();
 
+const redirectLink = (url) => {
+  router.push(url);
+};
+
 const logout = () => {
   document.cookie = 'twitterToken=; expires=; path=/';
+  router.push('/login');
 };
 </script>
 <template>
@@ -14,12 +20,12 @@ const logout = () => {
     <div
       class="container m-auto flex items-center justify-between px-1 sm:px-0"
     >
-      <router-link
-        to="/"
-        class="flex h-12 w-12 items-center justify-center rounded-full transition-all duration-200 hover:bg-blue-300/20"
+      <div
+        class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:bg-blue-300/20"
+        @click="redirectLink('/')"
       >
         <mdi:twitter class="text-2xl" />
-      </router-link>
+      </div>
       <SearchInput />
       <DroupDwonButton class="hidden sm:block" />
     </div>
@@ -27,10 +33,10 @@ const logout = () => {
   <nav
     class="fixed left-0 right-0 bottom-0 grid h-16 grid-cols-4 rounded-t-2xl bg-black sm:hidden"
   >
-    <router-link
-      to="/auth/posts"
+    <div
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="route.path === '/' && 'border-b-4 text-teal-50'"
+      @click="redirectLink('/')"
     >
       <template v-if="route.path !== '/'">
         <teenyicons:home-outline class="absolute" />
@@ -42,11 +48,11 @@ const logout = () => {
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
         >Home</span
       >
-    </router-link>
-    <router-link
-      to="/follow"
+    </div>
+    <div
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="route.path === '/follow' && 'border-b-4 border-teal-50'"
+      @click="redirectLink('/follow')"
     >
       <template v-if="route.path !== '/follow'">
         <teenyicons:bell-outline class="absolute" />
@@ -58,14 +64,14 @@ const logout = () => {
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
         >Follwers</span
       >
-    </router-link>
-    <router-link
-      :to="`/profile/${userStore.user.id}`"
+    </div>
+    <div
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="
         route.path === `/profile/${userStore.user.id}` &&
         'border-b-4  border-teal-50'
       "
+      @click="redirectLink(`/profile/${userStore.user.id}`)"
     >
       <template v-if="route.path !== `/profile/${userStore.user.id}`">
         <teenyicons:user-outline class="absolute" />
@@ -77,9 +83,8 @@ const logout = () => {
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
         >Profile</span
       >
-    </router-link>
-    <router-link
-      to="/login"
+    </div>
+    <div
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       @click="logout"
     >
@@ -88,7 +93,7 @@ const logout = () => {
         class="absolute top-0 rounded-md bg-white px-3 py-2 text-gray-500 opacity-0 transition-all duration-200 group-hover:-translate-y-full group-hover:opacity-100"
         >SignOut</span
       >
-    </router-link>
+    </div>
   </nav>
 </template>
 <style></style>

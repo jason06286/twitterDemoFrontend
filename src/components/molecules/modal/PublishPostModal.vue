@@ -71,7 +71,7 @@ onUnmounted(() => {
       <mdi-close class="text-xl"></mdi-close>
     </button>
     <div class="flex w-[300px] p-1 sm:w-[500px]">
-      <div class="mr-2 h-12 w-12 overflow-hidden rounded-full">
+      <div class="mr-2 h-12 w-12 shrink-0 overflow-hidden rounded-full">
         <img :src="userStore.user.photo" alt="avator" />
       </div>
       <div class="w-full">
