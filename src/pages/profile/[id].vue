@@ -32,7 +32,7 @@ const isShowResetPasswordModal = ref(false);
 const isShowEditProfileModal = ref(false);
 
 const judgeFollowing = (id) => {
-  const filter = followStore.following.filter((item) => item.user._id === id);
+  const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
 };
 const showEditPostModal = (id) => {
@@ -44,7 +44,7 @@ const redirect = (id) => {
   router.push(`/profile/${id}`);
 };
 
-const getProfilePosts = async (id = userProfile.value.user._id) => {
+const getProfilePosts = async (id = userProfile.value.user.id) => {
   isLoading.value = true;
   await profilePostsStore.getProfilePosts(id);
   isLoading.value = false;
@@ -71,7 +71,7 @@ const init = async () => {
 
     userProfile.value = res.data.data;
 
-    await getProfilePosts(userProfile.value.user._id);
+    await getProfilePosts(userProfile.value.user.id);
     await getFollow(route.params.id);
     await followStore.getFollow(userStore.user.id);
   } catch (error) {
@@ -243,7 +243,7 @@ onMounted(async () => {
         </div>
         <Post
           v-for="post in profilePostsStore?.posts"
-          :key="post._id"
+          :key="post.id"
           :post="post"
           :is-admin="isAdmin"
           @init="init"
@@ -263,23 +263,20 @@ onMounted(async () => {
     <template v-else>
       <div
         v-for="follow in follower"
-        :key="follow._id"
+        :key="follow.id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <div
-          class="cursor-pointer font-bold"
-          @click="redirect(follow.user._id)"
-        >
+        <div class="cursor-pointer font-bold" @click="redirect(follow.user.id)">
           {{ follow.user.name }}
         </div>
         <button
-          v-if="judgeFollowing(follow.user._id)"
+          v-if="judgeFollowing(follow.user.id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user.id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -287,8 +284,8 @@ onMounted(async () => {
           v-else
           type="button"
           class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user._id && 'hidden'"
-          @click="toggleFollow(follow.user._id)"
+          :class="userStore.user.id === follow.user.id && 'hidden'"
+          @click="toggleFollow(follow.user.id)"
         >
           <span>追蹤</span>
         </button>
@@ -306,24 +303,21 @@ onMounted(async () => {
     <template v-else>
       <div
         v-for="follow in following"
-        :key="follow._id"
+        :key="follow.id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
           <img :src="follow.user.photo" alt="avatar" />
         </div>
-        <div
-          class="cursor-pointer font-bold"
-          @click="redirect(follow.user._id)"
-        >
+        <div class="cursor-pointer font-bold" @click="redirect(follow.user.id)">
           {{ follow.user.name }}
         </div>
 
         <button
-          v-if="judgeFollowing(follow.user._id)"
+          v-if="judgeFollowing(follow.user.id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user.id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -331,8 +325,8 @@ onMounted(async () => {
           v-else
           type="button"
           class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user._id && 'hidden'"
-          @click="toggleFollow(follow.user._id)"
+          :class="userStore.user.id === follow.user.id && 'hidden'"
+          @click="toggleFollow(follow.user.id)"
         >
           <span>追蹤</span>
         </button>
@@ -344,7 +338,7 @@ onMounted(async () => {
   <template v-for="post in profilePostsStore?.posts">
     <EditPostModal
       v-if="!post.share"
-      :key="post._id"
+      :key="post.id"
       :post="post"
       @confirm="getProfilePosts"
     >

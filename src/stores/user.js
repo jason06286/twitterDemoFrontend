@@ -2,13 +2,13 @@ import { apiGetProfile } from '@/api/api';
 
 const useUserStore = defineStore('user', () => {
   const user = ref({});
-  const setUser = async (id) => {
+  const setUser = async (userId) => {
     try {
-      const res = await apiGetProfile(id);
-      const { _id, name, isThirdPartyLogin, photo } = res.data.data.user;
+      const res = await apiGetProfile(userId);
+      const { id, name, isThirdPartyLogin, photo } = res.data.data.user;
       const { coverImage = '', description = '' } = res.data.data;
       user.value = {
-        id: _id,
+        id,
         name,
         isThirdPartyLogin,
         photo,

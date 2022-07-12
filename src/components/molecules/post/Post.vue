@@ -46,7 +46,7 @@ const isShowDeletePostModal = ref(false);
 const truncatePosition = ref('');
 
 const isLike = computed(() => {
-  const filter = likes.value.filter((item) => item._id === userStore.user.id);
+  const filter = likes.value.filter((item) => item.id === userStore.user.id);
   return filter.length;
 });
 
@@ -117,12 +117,12 @@ const redirectLink = (url) => {
   router.push(url);
 };
 const judgeFollowing = (id) => {
-  const filter = followStore.following.filter((item) => item.user._id === id);
+  const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
 };
 
 const sharePost = async () => {
-  await apiSharePost(props.post._id);
+  await apiSharePost(props.post.id);
   emit('init');
   toast.success('分享貼文成功!');
   if (route.path === '/') {
@@ -140,12 +140,12 @@ const sharePost = async () => {
   }
 };
 const deletePost = async () => {
-  await apiDeletePost(props.post._id);
+  await apiDeletePost(props.post.id);
   emit('init');
 };
 const showEditPostModal = () => {
   droupActive.value = !droupActive.value;
-  emit('showEditPostModal', props.post._id);
+  emit('showEditPostModal', props.post.id);
 };
 
 const showDeletePostModal = () => {
@@ -156,7 +156,7 @@ const showDeletePostModal = () => {
 onMounted(async () => {
   try {
     likes.value.length = 0;
-    await getLikes(props.post._id);
+    await getLikes(props.post.id);
   } catch (error) {
     console.error(error);
   }
@@ -195,7 +195,7 @@ onUnmounted(() => {
         <div class="ml-2">
           <div
             class="cursor-pointer font-bold hover:text-blue-400 md:text-xl"
-            @click="redirectLink(`/profile/${props.post.user._id}`)"
+            @click="redirectLink(`/profile/${props.post.user.id}`)"
           >
             {{ props.post.user.name }}
           </div>
@@ -247,7 +247,7 @@ onUnmounted(() => {
           <div class="ml-2">
             <div
               class="cursor-pointer font-bold hover:text-blue-400"
-              @click="redirectLink(`/profile/${props.post.share.user._id}`)"
+              @click="redirectLink(`/profile/${props.post.share.user.id}`)"
             >
               {{ props.post.share.user.name }}
             </div>
@@ -373,7 +373,7 @@ onUnmounted(() => {
       <div
         class="flex cursor-pointer items-center justify-center border-r border-gray-700 py-3 transition-all duration-200 hover:bg-red-500/30 hover:text-pink-300"
         :class="isLike && 'text-red-800'"
-        @click="toggleLikes(props.post._id)"
+        @click="toggleLikes(props.post.id)"
       >
         <template v-if="isLike">
           <ri:heart-3-fill class="mr-1" />
@@ -413,7 +413,7 @@ onUnmounted(() => {
     <template v-else>
       <div
         v-for="item in likes"
-        :key="item._id"
+        :key="item.id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
@@ -421,15 +421,15 @@ onUnmounted(() => {
         </div>
         <div
           class="cursor-pointer font-bold"
-          @click="redirectLink(`/profile/${item._id}`)"
+          @click="redirectLink(`/profile/${item.id}`)"
         >
           {{ item.name }}
         </div>
         <button
-          v-if="judgeFollowing(item._id)"
+          v-if="judgeFollowing(item.id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(item._id)"
+          @click="followStore.toggleFollow(item.id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -437,9 +437,9 @@ onUnmounted(() => {
           v-else
           type="button"
           :class="
-            userStore.user.id === item._id ? 'hidden' : 'confirm-btn ml-auto'
+            userStore.user.id === item.id ? 'hidden' : 'confirm-btn ml-auto'
           "
-          @click="followStore.toggleFollow(item._id)"
+          @click="followStore.toggleFollow(item.id)"
         >
           <span>追蹤</span>
         </button>
@@ -460,7 +460,7 @@ onUnmounted(() => {
         <div class="ml-2">
           <div
             class="cursor-pointer font-bold hover:text-blue-400 md:text-xl"
-            @click="redirectLink(`/profile/${props.post.user._id}`)"
+            @click="redirectLink(`/profile/${props.post.user.id}`)"
           >
             {{ props.post.user.name }}
           </div>

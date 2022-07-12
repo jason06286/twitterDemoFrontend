@@ -44,7 +44,7 @@ onMounted(async () => {
           <template v-if="followStore.following.length">
             <div
               v-for="follow in followStore.following"
-              :key="follow.user._id"
+              :key="follow.user.id"
               class="mb-5 flex items-center"
             >
               <div
@@ -54,7 +54,7 @@ onMounted(async () => {
               </div>
               <div class="ml-3 space-y-1 text-xs sm:text-sm">
                 <router-link
-                  :to="`/profile/${follow.user._id}`"
+                  :to="`/profile/${follow.user.id}`"
                   class="text-base font-bold sm:text-xl"
                 >
                   {{ follow.user.name }}
@@ -69,7 +69,7 @@ onMounted(async () => {
                 <button
                   type="button"
                   class="cancel-btn bg-red-900/50"
-                  @click="followStore.toggleFollow(follow.user._id)"
+                  @click="followStore.toggleFollow(follow.user.id)"
                 >
                   取消追蹤
                 </button>

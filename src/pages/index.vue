@@ -20,12 +20,11 @@ const checkStatus = async () => {
       /(?:(?:^|.*;\s*)twitterToken\s*=\s*([^;]*).*$)|^.*$/,
       '$1'
     );
-
     if (!token) return router.push('/login');
     setToken();
     const res = await apiCheckStatus();
     if (res.data.status === 'success') {
-      userStore.setUser(res.data.data.user._id);
+      userStore.setUser(res.data.data.user.id);
     }
   } catch (error) {
     router.push('/login');

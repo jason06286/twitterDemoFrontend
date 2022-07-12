@@ -17,7 +17,7 @@ const redirectLink = (url) => {
   router.push(url);
 };
 const judgeFollowing = (id) => {
-  const filter = followStore.following.filter((item) => item.user._id === id);
+  const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
 };
 </script>
@@ -110,7 +110,7 @@ const judgeFollowing = (id) => {
     <template v-else>
       <div
         v-for="follow in followStore.follower"
-        :key="follow._id"
+        :key="follow.id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
@@ -118,15 +118,15 @@ const judgeFollowing = (id) => {
         </div>
         <div
           class="cursor-pointer font-bold"
-          @click="redirectLink(`/profile/${follow.user._id}`)"
+          @click="redirectLink(`/profile/${follow.user.id}`)"
         >
           {{ follow.user.name }}
         </div>
         <button
-          v-if="judgeFollowing(follow.user._id)"
+          v-if="judgeFollowing(follow.user.id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="followStore.toggleFollow(follow.user.id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -134,8 +134,8 @@ const judgeFollowing = (id) => {
           v-else
           type="button"
           class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user._id && 'hidden'"
-          @click="followStore.toggleFollow(follow.user._id)"
+          :class="userStore.user.id === follow.user.id && 'hidden'"
+          @click="followStore.toggleFollow(follow.user.id)"
         >
           <span>追蹤</span>
         </button>
@@ -153,7 +153,7 @@ const judgeFollowing = (id) => {
     <template v-else>
       <div
         v-for="follow in followStore.following"
-        :key="follow._id"
+        :key="follow.id"
         class="mb-3 flex w-[300px] items-center"
       >
         <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
@@ -161,7 +161,7 @@ const judgeFollowing = (id) => {
         </div>
         <div
           class="cursor-pointer font-bold"
-          @click="redirectLink(`/profile/${follow.user._id}`)"
+          @click="redirectLink(`/profile/${follow.user.id}`)"
         >
           {{ follow.user.name }}
         </div>
@@ -169,7 +169,7 @@ const judgeFollowing = (id) => {
         <button
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="followStore.toggleFollow(follow.user.id)"
         >
           取消追蹤
         </button>
