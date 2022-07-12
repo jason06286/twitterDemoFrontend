@@ -101,7 +101,7 @@ const calcWidth = () => {
   const fontSize = Number(style['font-size'].replace('px', ''));
   const maxWidth = Number(style.width.replace('px', ''));
   const row = content.split('\n');
-  const contentLength = row[1].length;
+  const contentLength = row.length >= 3 ? row[1].length : 10000;
   const position = fontSize * Number(contentLength);
 
   truncatePosition.value =
@@ -473,7 +473,7 @@ onUnmounted(() => {
         <template v-if="props?.post?.content">
           <div class="mb-5" v-html="formatContent(props.post.content)"></div>
         </template>
-        <div v-if="props.post.images.length" class="mb-5">
+        <div v-if="props.post?.images?.length" class="mb-5">
           <div class="grid h-[200px] md:h-[300px]" :class="imagesClass">
             <div
               v-for="(image, i) in props.post.images"
@@ -481,7 +481,7 @@ onUnmounted(() => {
               :style="{ backgroundImage: 'url(' + image + ')' }"
               class="h-full cursor-pointer border-2 bg-cover bg-center p-1"
               :class="
-                props.post.images.length >= 3
+                props.post?.images?.length >= 3
                   ? 'odd:row-span-2'
                   : 'odd:row-auto'
               "
@@ -497,14 +497,14 @@ onUnmounted(() => {
   <DeletePostModal v-model="isShowDeletePostModal" @confirm="deletePost" />
   <template v-if="props.post.share">
     <ImageModal
-      v-if="props.post.share.images.length"
+      v-if="props.post?.share?.images?.length"
       ref="imgModal"
       :images="props.post.share.images"
     />
   </template>
   <template v-else>
     <ImageModal
-      v-if="props.post.images.length"
+      v-if="props?.post?.images?.length"
       ref="imgModal"
       :images="props.post.images"
     />
