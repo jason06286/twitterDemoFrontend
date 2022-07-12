@@ -1,1 +1,0 @@
-import{f as n,m as u,o as d,c as m,u as p,U as k,am as _,ao as i}from"./index.77b64024.js";const x={__name:"callback",setup(l){const t=p(),o=k(),s=n(),{token:a,id:r}=t.query,c=()=>{const e=_().utc().add(7,"days").format();document.cookie=`twitterToken=${a}; expires=${e}; path=/`,i(),s.setUser(r),o.push("/")};return u(()=>{c()}),(e,f)=>(d(),m("div"))}};export{x as default};
