@@ -1,7 +1,7 @@
 import { apiUploadFile } from '@/api/api';
 
 export default function useImage() {
-  const errormsg = ref('');
+  const errorMsg = ref('');
 
   const images = ref([]);
 
@@ -13,8 +13,8 @@ export default function useImage() {
       const res = await apiUploadFile(formData);
       return res;
     } catch (error) {
-      errormsg.value = error.response.data.message;
-      console.log(error);
+      errorMsg.value = error.response.data.message;
+      console.error(error);
     }
   };
   const uploadImg = async (data) => {
@@ -25,7 +25,7 @@ export default function useImage() {
       const res = await apiUploadFile(formData);
       return res;
     } catch (error) {
-      errormsg.value = error.response.data.message;
+      errorMsg.value = error.response.data.message;
       console.log(error);
     }
   };
@@ -39,6 +39,6 @@ export default function useImage() {
     uploadFile,
     uploadImg,
     deleteImage,
-    errormsg,
+    errorMsg,
   };
 }

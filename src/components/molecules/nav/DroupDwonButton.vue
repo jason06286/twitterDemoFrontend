@@ -13,7 +13,7 @@ const redirect = (url) => {
 };
 
 const logout = () => {
-  document.cookie = 'twitterToken=;';
+  document.cookie = 'twitterToken=; expires=; path=/';
   redirect(`/login`);
 };
 </script>

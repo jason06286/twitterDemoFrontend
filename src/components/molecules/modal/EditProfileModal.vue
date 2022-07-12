@@ -1,10 +1,15 @@
 <script setup>
+import { useToast } from 'vue-toastification';
 import { VueFinalModal, $vfm } from 'vue-final-modal';
+
 import useImage from '@/methods/useImage';
 import useUserStore from '@/stores/user';
 
 import { apiEditProfile } from '@/api/api';
 
+const emit = defineEmits(['init']);
+
+const toast = useToast();
 const userStore = useUserStore();
 
 const { uploadImg, uploadFile } = useImage();
@@ -31,7 +36,7 @@ const editCoverImage = async (e) => {
     coverImage.value = res.data.data.imgUrl;
     isCoverImageActive.value = true;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   isLoading.value = false;
@@ -43,38 +48,38 @@ const editAvatar = async (e) => {
     photo.value = res.data.data.imgUrl;
     isAvatarActive.value = true;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   isLoading.value = false;
 };
 const cropedCoverImage = () => {
-  console.log('cropCoverImage :>> ', cropCoverImage.value);
   cropCoverImage.value.preview();
 };
 const cropedAvatar = () => {
-  console.log('cropCoverImage :>> ', cropCoverImage.value);
   cropAvatar.value.preview();
 };
 const confirmCropedCoverImage = async (data) => {
+  isLoading.value = true;
   try {
     const res = await uploadImg(data);
     coverImage.value = res.data.data.imgUrl;
     isCoverImageActive.value = false;
-    console.log('res :>> ', res);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
+  isLoading.value = false;
 };
 const confirmCropedAvatar = async (data) => {
+  isLoading.value = true;
   try {
     const res = await uploadImg(data);
     photo.value = res.data.data.imgUrl;
     isAvatarActive.value = false;
-    console.log('res :>> ', res);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
+  isLoading.value = false;
 };
 
 watch(name, () => {
@@ -100,18 +105,18 @@ const reStart = () => {
 
 const confirmEditProfile = async () => {
   try {
-    const res = await apiEditProfile({
+    await apiEditProfile({
       name: name.value,
       photo: photo.value,
       coverImage: coverImage.value,
       description: description.value,
     });
     await userStore.setUser(userStore.user.id);
-    console.log('userStore.user :>> ', userStore.user);
-    console.log('res :>> ', res);
     reStart();
+    emit('init');
+    toast.success('修改個人資料成功!');
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -146,6 +151,7 @@ onMounted(async () => {
         v-if="isCoverImageActive"
         type="button"
         class="confirm-btn ml-auto bg-blue-900/50"
+        :disabled="isLoading"
         @click="cropedCoverImage"
       >
         截圖
@@ -154,20 +160,21 @@ onMounted(async () => {
         v-if="isAvatarActive"
         type="button"
         class="confirm-btn ml-auto bg-blue-900/50"
+        :disabled="isLoading"
         @click="cropedAvatar"
       >
         截圖
       </button>
     </div>
-    <div class="relative mb-5 w-[500px] overflow-hidden">
+    <div class="relative mb-5 w-[300px] overflow-hidden sm:w-[500px]">
       <div
         v-if="isLoading"
-        class="absolute inset-0 z-10 flex items-center justify-center bg-black/80"
+        class="absolute inset-0 z-20 flex items-center justify-center bg-black/80"
       >
         <mdi:loading class="animate-spin text-6xl" />
       </div>
       <div
-        class="flex h-[200px] w-full items-center justify-center gap-x-5 bg-gray-400 bg-cover bg-center"
+        class="flex h-[120px] w-full items-center justify-center gap-x-5 bg-gray-400 bg-cover bg-center sm:h-[200px]"
         :style="{ backgroundImage: 'url(' + coverImage + ')' }"
       >
         <div>
@@ -195,7 +202,7 @@ onMounted(async () => {
         </button>
       </div>
       <div
-        class="absolute inset-0 z-10 w-[500px] transition-all duration-200"
+        class="absolute inset-0 z-10 w-[300px] transition-all duration-200 sm:w-[500px]"
         :class="isCoverImageActive ? 'translate-x-0' : 'translate-x-full'"
       >
         <Cropper
@@ -206,7 +213,7 @@ onMounted(async () => {
         />
       </div>
       <div
-        class="absolute inset-0 z-10 w-[500px] transition-all duration-200"
+        class="absolute inset-0 z-10 w-[300px] transition-all duration-200 sm:w-[500px]"
         :class="isAvatarActive ? 'translate-x-0' : 'translate-x-full'"
       >
         <Cropper
@@ -218,7 +225,7 @@ onMounted(async () => {
       </div>
       <div class="p-5">
         <div
-          class="-mt-20 flex h-32 w-32 items-center justify-center rounded-full border-4 border-black bg-blue-300 bg-cover bg-center"
+          class="-mt-20 flex h-20 w-20 items-center justify-center rounded-full border-4 border-black bg-blue-300 bg-cover bg-center sm:h-32 sm:w-32"
           :style="{ backgroundImage: 'url(' + photo + ')' }"
         >
           <label

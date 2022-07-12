@@ -45,8 +45,6 @@ const redirect = (id) => {
 };
 
 const getProfilePosts = async (id = userProfile.value.user._id) => {
-  console.log('2 :>> ', '2');
-  console.log('id :>> ', id);
   isLoading.value = true;
   await profilePostsStore.getProfilePosts(id);
   isLoading.value = false;
@@ -58,8 +56,13 @@ const getFollow = async (id) => {
     following.value = res.data.data.following;
     follower.value = res.data.data.follower;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
+};
+
+const toggleFollow = async (id) => {
+  await followStore.toggleFollow(id);
+  await getFollow(route.params.id);
 };
 const init = async () => {
   isLoading.value = true;
@@ -71,27 +74,21 @@ const init = async () => {
     await getProfilePosts(userProfile.value.user._id);
     await getFollow(route.params.id);
     await followStore.getFollow(userStore.user.id);
-
-    console.log(res);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: 'smooth',
-  });
+
   isLoading.value = false;
 };
 watch(
   () => route.params.id,
   async () => {
+    if (route.params.id === undefined) return;
     await init();
   }
 );
 onMounted(async () => {
   isLoading.value = true;
-  console.log('isAdmin :>> ', isAdmin.value);
   await init();
 });
 </script>
@@ -282,7 +279,7 @@ onMounted(async () => {
           v-if="judgeFollowing(follow.user._id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user._id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -291,7 +288,7 @@ onMounted(async () => {
           type="button"
           class="confirm-btn ml-auto"
           :class="userStore.user.id === follow.user._id && 'hidden'"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user._id)"
         >
           <span>追蹤</span>
         </button>
@@ -326,7 +323,7 @@ onMounted(async () => {
           v-if="judgeFollowing(follow.user._id)"
           type="button"
           class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user._id)"
         >
           <span>取消追蹤</span>
         </button>
@@ -335,7 +332,7 @@ onMounted(async () => {
           type="button"
           class="confirm-btn ml-auto"
           :class="userStore.user.id === follow.user._id && 'hidden'"
-          @click="followStore.toggleFollow(follow.user._id)"
+          @click="toggleFollow(follow.user._id)"
         >
           <span>追蹤</span>
         </button>
@@ -354,7 +351,7 @@ onMounted(async () => {
     </EditPostModal>
   </template>
   <ResetPasswordModal v-model="isShowResetPasswordModal" />
-  <EditProfileModal v-model="isShowEditProfileModal" />
+  <EditProfileModal v-model="isShowEditProfileModal" @init="init" />
 </template>
 <style scoped>
 .bg-ig {

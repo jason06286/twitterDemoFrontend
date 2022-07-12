@@ -2,7 +2,7 @@ import useUserStore from '@/stores/user';
 import { apiGetFollow, apiToggleFollow } from '@/api/api';
 
 const useFollowStore = defineStore('follow', () => {
-  const store = useUserStore();
+  const userStore = useUserStore();
 
   const following = ref([]);
   const follower = ref([]);
@@ -13,16 +13,16 @@ const useFollowStore = defineStore('follow', () => {
       following.value = res.data.data.following;
       follower.value = res.data.data.follower;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const toggleFollow = async (id) => {
     try {
       await apiToggleFollow(id);
-      await getFollow(store.user.id);
+      await getFollow(userStore.user.id);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

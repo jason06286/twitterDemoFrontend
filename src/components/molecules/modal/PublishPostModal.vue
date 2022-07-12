@@ -9,7 +9,8 @@ const emit = defineEmits(['publish']);
 
 const userStore = useUserStore();
 
-const { images, errormsg, uploadFile, deleteImage } = useImage();
+const { images, errorMsg, uploadFile, deleteImage } = useImage();
+
 const isShowCancelModal = ref(false);
 const isLoading = ref(false);
 const content = ref('');
@@ -20,8 +21,8 @@ const doUploadFile = async (e) => {
     const res = await uploadFile(e.target);
     images.value.push(res.data.data.imgUrl);
   } catch (error) {
-    console.log(error);
-    errormsg.value = error.response.data.message;
+    console.error(error);
+    errorMsg.value = error.response.data.message;
   }
   isLoading.value = false;
 };
@@ -29,25 +30,24 @@ const reStart = () => {
   content.value = '';
   images.value.length = 0;
   isLoading.value = false;
-  errormsg.value = '';
+  errorMsg.value = '';
   $vfm.hideAll();
 };
 const publishPost = async () => {
-  errormsg.value = '';
+  errorMsg.value = '';
   if (content.value === '' && !images.value.length) {
-    return (errormsg.value = '請輸入貼文內容或上傳一張圖片');
+    return (errorMsg.value = '請輸入貼文內容或上傳一張圖片');
   }
   try {
-    const res = await apiAddPost({
+    await apiAddPost({
       content: content.value,
       images: images.value,
     });
     emit('publish');
     reStart();
     $vfm.hideAll();
-    console.log(res);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -55,7 +55,7 @@ onUnmounted(() => {
   content.value = '';
   images.value.length = 0;
   isLoading.value = false;
-  errormsg.value = '';
+  errorMsg.value = '';
 });
 </script>
 <template>
@@ -132,7 +132,7 @@ onUnmounted(() => {
             class="hidden"
             @change="doUploadFile($event)"
           />
-          <p class="text-sm text-red-800 sm:text-xl">{{ errormsg }}</p>
+          <p class="text-sm text-red-800 sm:text-xl">{{ errorMsg }}</p>
           <button
             class="confirm-btn disabled:bg-gray-400"
             :disabled="isLoading"

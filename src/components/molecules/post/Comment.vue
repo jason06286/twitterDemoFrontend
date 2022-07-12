@@ -40,7 +40,7 @@ const postComment = async (id) => {
     isOpenComment.value = true;
     content.value = '';
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 defineExpose({ comments, focusComment, openComment });

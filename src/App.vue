@@ -20,4 +20,8 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+.Vue-Toastification__toast--success {
+  background-color: #006400;
+  color: ghostwhite;
+}
 </style>

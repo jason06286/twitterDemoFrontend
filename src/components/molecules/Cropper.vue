@@ -1,6 +1,7 @@
 <script setup>
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
+import useUserStore from '@/stores/user';
 
 const props = defineProps({
   image: {
@@ -14,10 +15,15 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['confirmCropedCoverImage']);
+
+const route = useRoute();
+const userStore = useUserStore();
+
 const cropper = ref();
 const option = ref({
   outputType: 'png', // 產生圖片的格式
   autoCrop: true,
+  enlarge: 3,
 });
 
 const preview = async () => {
@@ -25,6 +31,20 @@ const preview = async () => {
     emit('confirmCropedCoverImage', data);
   });
 };
+
+watchEffect(() => {
+  if (route.params.id === userStore.user.id) {
+    window.addEventListener('resize', (e) => {
+      if (e.target.screen.width >= 768) {
+        option.value.enlarge = 3;
+      } else {
+        option.value.enlarge = 5;
+      }
+    });
+  } else {
+    window.removeEventListener('resize', () => {});
+  }
+});
 
 defineExpose({ preview });
 </script>
@@ -40,6 +60,7 @@ defineExpose({ preview });
     :output-type="option.outputType"
     :fixed-box="false"
     :can-scale="true"
+    :enlarge="option.enlarge"
     center-box
   ></vueCropper>
 </template>

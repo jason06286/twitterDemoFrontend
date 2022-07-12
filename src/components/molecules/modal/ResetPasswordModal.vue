@@ -1,19 +1,24 @@
 <script setup>
+import { useToast } from 'vue-toastification';
 import { VueFinalModal, $vfm } from 'vue-final-modal';
 
 import { apiResetPassword } from '@/api/api';
 import { useForm, useField } from 'vee-validate';
 import { resetPasswordSchema } from '@/methods/validate';
 
-const isLoading = ref(false);
-const isLook = ref(false);
-const isShowCancelModal = ref(false);
-const errorMessage = ref('');
+const toast = useToast();
+
 const { errors, handleSubmit, resetForm } = useForm({
   validationSchema: resetPasswordSchema,
 });
 const { value: checked } = useField('checked');
 const { value: password } = useField('password');
+
+const isLoading = ref(false);
+const isLook = ref(false);
+const isShowCancelModal = ref(false);
+const errorMessage = ref('');
+
 const reStart = () => {
   resetForm();
   errorMessage.value = '';
@@ -23,12 +28,12 @@ const onSubmit = handleSubmit(async () => {
   isLoading.value = true;
   errorMessage.value = '';
   try {
-    const res = await apiResetPassword({
+    await apiResetPassword({
       password: password.value,
     });
     resetForm();
     $vfm.hideAll();
-    console.log('res :>> ', res);
+    toast.success('修改密碼成功!');
   } catch (error) {
     errorMessage.value = error.response.data.message;
   }

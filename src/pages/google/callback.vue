@@ -1,20 +1,20 @@
 <script setup>
+import moment from 'moment';
+
 import useUserStore from '@/stores/user';
 import { setToken } from '@/api/api';
 
 const route = useRoute();
 const router = useRouter();
-const store = useUserStore();
+const userStore = useUserStore();
 
 const { token, id } = route.query;
 
-console.log('route.query :>> ', route.query);
-
 const setData = () => {
-  document.cookie = `twitterToken=${token}`;
+  const date = moment().utc().add(7, 'days').format();
+  document.cookie = `twitterToken=${token}; expires=${date}; path=/`;
   setToken();
-  store.setUser(id);
-  console.log('store.user :>> ', store.user);
+  userStore.setUser(id);
   router.push('/');
 };
 

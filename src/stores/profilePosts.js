@@ -1,18 +1,14 @@
-import useUserStore from '@/stores/user';
 import { apiGetProfilePosts } from '@/api/api';
 
 const useProfilePostsStore = defineStore('profile-post', () => {
-  const store = useUserStore();
-
   const posts = ref([]);
 
   const getProfilePosts = async (id) => {
-    console.log('Profil id :>> ', id);
     try {
       const res = await apiGetProfilePosts(id);
       posts.value = res.data.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

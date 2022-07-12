@@ -6,7 +6,7 @@ const route = useRoute();
 const userStore = useUserStore();
 
 const logout = () => {
-  document.cookie = 'twitterToken=;';
+  document.cookie = 'twitterToken=; expires=; path=/';
 };
 </script>
 <template>
@@ -32,7 +32,7 @@ const logout = () => {
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="route.path === '/' && 'border-b-4 text-teal-50'"
     >
-      <template v-if="route.path !== '/auth/posts'">
+      <template v-if="route.path !== '/'">
         <teenyicons:home-outline class="absolute" />
       </template>
       <template v-else>
@@ -48,7 +48,7 @@ const logout = () => {
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
       :class="route.path === '/follow' && 'border-b-4 border-teal-50'"
     >
-      <template v-if="route.path !== '/auth/follow'">
+      <template v-if="route.path !== '/follow'">
         <teenyicons:bell-outline class="absolute" />
       </template>
       <template v-else>
@@ -62,9 +62,12 @@ const logout = () => {
     <router-link
       :to="`/profile/${userStore.user.id}`"
       class="group relative flex h-full cursor-pointer items-center justify-center py-3 text-xl text-slate-400"
-      :class="route.path === '/profile' && 'border-b-4  border-teal-50'"
+      :class="
+        route.path === `/profile/${userStore.user.id}` &&
+        'border-b-4  border-teal-50'
+      "
     >
-      <template v-if="route.path !== '/auth'">
+      <template v-if="route.path !== `/profile/${userStore.user.id}`">
         <teenyicons:user-outline class="absolute" />
       </template>
       <template v-else>

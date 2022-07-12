@@ -44,6 +44,7 @@ export const apiGetPosts = () => baseRequest.get('posts');
 export const apiAddPost = (data) => baseRequest.post(`post`, data);
 export const apiEditPost = (id, data) => baseRequest.patch(`post/${id}`, data);
 export const apiDeletePost = (id) => baseRequest.delete(`post/${id}`);
+export const apiSharePost = (id) => baseRequest.post(`post/share/${id}`);
 
 export const apiGetFollow = (id) => baseRequest.get(`follow/${id}`);
 export const apiToggleFollow = (id) => baseRequest.patch(`follow/${id}`);
@@ -55,9 +56,4 @@ export const apiGetComments = (id) => baseRequest.get(`post/${id}/comments`);
 export const apiPostComment = (id, data) =>
   baseRequest.post(`post/${id}/comments`, data);
 
-export const apiSharePost = (id) => baseRequest.post(`post/share/${id}`);
-
 export const apiUploadFile = (data) => baseRequest.post('uploadImage', data);
-
-export const apiUploadImage = (data) =>
-  baseRequest.post('uploadImage/base64', data);

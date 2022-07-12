@@ -15,7 +15,7 @@ const emit = defineEmits(['confirm']);
 
 const userStore = useUserStore();
 
-const { images, errormsg, uploadFile, deleteImage } = useImage();
+const { images, errorMsg, uploadFile, deleteImage } = useImage();
 
 const isShowEditPostModal = ref(false);
 const isShowCancelModal = ref(false);
@@ -33,8 +33,8 @@ const doUploadFile = async (e) => {
     const res = await uploadFile(e.target);
     await images.value.push(res.data.data.imgUrl);
   } catch (error) {
-    console.log(error);
-    errormsg.value = error.response.data.message;
+    console.error(error);
+    errorMsg.value = error.response.data.message;
   }
   isLoading.value = false;
 };
@@ -42,13 +42,13 @@ const reStart = () => {
   content.value = props.post.content;
   images.value = [...props.post.images];
   isLoading.value = false;
-  errormsg.value = '';
+  errorMsg.value = '';
   $vfm.hideAll();
 };
 const publishPost = async () => {
-  errormsg.value = '';
+  errorMsg.value = '';
   if (content.value === '' && !images.value.length) {
-    return (errormsg.value = '請輸入貼文內容或上傳一張圖片');
+    return (errorMsg.value = '請輸入貼文內容或上傳一張圖片');
   }
   try {
     await apiEditPost(props.post.id, {
@@ -59,7 +59,7 @@ const publishPost = async () => {
     reStart();
     $vfm.hideAll();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 </script>
@@ -137,7 +137,7 @@ const publishPost = async () => {
             class="hidden"
             @change="doUploadFile($event)"
           />
-          <p class="text-sm text-red-800 sm:text-xl">{{ errormsg }}</p>
+          <p class="text-sm text-red-800 sm:text-xl">{{ errorMsg }}</p>
           <button
             class="confirm-btn disabled:bg-gray-400"
             :disabled="isLoading"

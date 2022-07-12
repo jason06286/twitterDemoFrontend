@@ -20,7 +20,6 @@ const checkStatus = async () => {
       /(?:(?:^|.*;\s*)twitterToken\s*=\s*([^;]*).*$)|^.*$/,
       '$1'
     );
-    console.log('token :>> ', token);
 
     if (!token) return router.push('/login');
     setToken();
@@ -40,7 +39,7 @@ const init = async () => {
     posts.value = postsRes.data.data;
     await followStore.getFollow(userStore.user.id);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
   window.scrollTo({
     top: 0,

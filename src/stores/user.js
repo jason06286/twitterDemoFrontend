@@ -15,9 +15,8 @@ const useUserStore = defineStore('user', () => {
         coverImage,
         description,
       };
-      console.log('userStore :>> ', user.value);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

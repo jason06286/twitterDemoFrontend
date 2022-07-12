@@ -1,4 +1,6 @@
 <script setup>
+import { useToast } from 'vue-toastification';
+
 import useUserStore from '@/stores/user';
 import useFollowStore from '@/stores/follow';
 
@@ -20,8 +22,12 @@ const props = defineProps({
 
 const emit = defineEmits(['init', 'showEditPostModal']);
 
+const toast = useToast();
+
 const userStore = useUserStore();
 const followStore = useFollowStore();
+
+const route = useRoute();
 
 const { likes, getLikes, toggleLikes } = useLike();
 
@@ -115,6 +121,20 @@ const judgeFollowing = (id) => {
 const sharePost = async () => {
   await apiSharePost(props.post._id);
   emit('init');
+  toast.success('分享貼文成功!');
+  if (route.path === '/') {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  } else {
+    window.scrollTo({
+      top: 500,
+      left: 0,
+      behavior: 'smooth',
+    });
+  }
 };
 const deletePost = async () => {
   await apiDeletePost(props.post._id);
@@ -135,7 +155,7 @@ onMounted(async () => {
     likes.value.length = 0;
     await getLikes(props.post._id);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
   nextTick(() => {
     calcLine();
