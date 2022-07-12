@@ -10,7 +10,7 @@ const routes = [
   },
   {
     path: '/profile/:id',
-    component: () => import('@/pages/profile/[id].vue'),
+    component: () => import('@/pages/profile/id.vue'),
   },
   {
     path: '/follow',
