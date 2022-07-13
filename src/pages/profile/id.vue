@@ -8,7 +8,6 @@ import useUserStore from '@/stores/user';
 import { apiGetProfile, apiGetFollow } from '@/api/api';
 
 const route = useRoute();
-const router = useRouter();
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
@@ -271,6 +270,10 @@ onMounted(async () => {
     </EditPostModal>
   </template>
   <ResetPasswordModal v-model="isShowResetPasswordModal" />
-  <EditProfileModal v-model="isShowEditProfileModal" @init="init" />
+  <EditProfileModal
+    v-if="userStore.user.id"
+    v-model="isShowEditProfileModal"
+    @init="init"
+  />
 </template>
 <style></style>

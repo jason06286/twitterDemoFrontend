@@ -132,7 +132,7 @@ onMounted(async () => {
     content-class="relative flex flex-col max-h-full mx-4  border dark:border-gray-800 rounded bg-white dark:bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
-    <div class="flex w-full items-center p-3 text-xl">
+    <div class="flex w-full items-center p-3 text-sm sm:text-xl">
       <button @click="isShowCancelModal = true">
         <ic:round-close />
       </button>

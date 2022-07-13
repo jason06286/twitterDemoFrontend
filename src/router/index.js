@@ -9,8 +9,14 @@ const routes = [
     component: Home,
   },
   {
-    path: '/profile/:id',
-    component: () => import('@/pages/profile/id.vue'),
+    path: '/profile',
+    component: () => import('@/pages/profile/index.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('@/pages/profile/id.vue'),
+      },
+    ],
   },
   {
     path: '/follow',
