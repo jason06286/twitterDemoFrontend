@@ -2,6 +2,7 @@
 import { useToast } from 'vue-toastification';
 
 import useUserStore from '@/stores/user';
+import useFollowStore from '@/stores/follow';
 
 import { formatTime, formatContent } from '@/methods/format';
 import useLike from '@/methods/useLike';
@@ -24,6 +25,7 @@ const emit = defineEmits(['init', 'showEditPostModal']);
 const toast = useToast();
 
 const userStore = useUserStore();
+const followStore = useFollowStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -131,6 +133,10 @@ watchEffect(() => {
 const redirectLink = (url) => {
   router.push(url);
 };
+const judgeFollowing = (id) => {
+  const filter = followStore.following.filter((item) => item.user.id === id);
+  return filter.length;
+};
 
 const sharePost = async () => {
   await apiSharePost(props.post.id);
@@ -167,7 +173,9 @@ const showDeletePostModal = () => {
 onMounted(async () => {
   try {
     const res = await getLikes(props.post.id);
+    console.log('res :>> ', res);
     likes.value = res;
+    console.log('likes :>> ', likes.value);
   } catch (error) {
     console.error(error);
   }
@@ -413,7 +421,50 @@ onUnmounted(() => {
     <Comment ref="comment" :post="props.post" />
   </div>
 
-  <LikesModal v-model="isShowLikeModal" :post="props.post" />
+  <Modal v-model="isShowLikeModal">
+    <template #title>喜歡的用戶</template>
+    <div
+      v-if="!likes.length"
+      class="flex h-full w-[300px] items-center justify-center text-sm"
+    >
+      還沒有任何人喜歡
+    </div>
+    <template v-else>
+      <div
+        v-for="item in likes"
+        :key="item.id"
+        class="mb-3 flex w-[300px] items-center"
+      >
+        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
+          <img :src="item.photo" alt="avatar" />
+        </div>
+        <div
+          class="cursor-pointer font-bold"
+          @click="redirectLink(`/profile/${item.id}`)"
+        >
+          {{ item.name }}
+        </div>
+        <button
+          v-if="judgeFollowing(item.id)"
+          type="button"
+          class="cancel-btn ml-auto bg-red-900/50"
+          @click="followStore.toggleFollow(item.id)"
+        >
+          <span>取消追蹤</span>
+        </button>
+        <button
+          v-else
+          type="button"
+          :class="
+            userStore.user.id === item.id ? 'hidden' : 'confirm-btn ml-auto'
+          "
+          @click="followStore.toggleFollow(item.id)"
+        >
+          <span>追蹤</span>
+        </button>
+      </div>
+    </template>
+  </Modal>
   <SharePostModal
     v-model="isShowShareModal"
     :title="'分享貼文'"

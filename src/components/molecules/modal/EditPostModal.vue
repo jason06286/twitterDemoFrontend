@@ -70,7 +70,7 @@ const publishPost = async () => {
     :click-to-close="false"
     :name="props.post.id"
     classes="flex justify-center items-center text-gray-300 rounded-lg"
-    content-class="relative flex flex-col max-h-full mx-4 p-4 border dark:border-gray-800 rounded-md bg-white dark:bg-black"
+    content-class="relative flex flex-col max-h-full mx-4 p-4 border border-gray-800 rounded-md  bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
     <button class="mb-3" @click="isShowCancelModal = true">
