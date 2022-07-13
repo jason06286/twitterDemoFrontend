@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
     'Ic:sharpPublish': typeof import('~icons/ic/sharp-publish')['default']
     ImageModal: typeof import('./components/molecules/modal/ImageModal.vue')['default']
     Loading: typeof import('./components/molecules/Loading.vue')['default']
+    'Mdi:arrowLeft': typeof import('~icons/mdi/arrow-left')['default']
     'Mdi:closeCircle': typeof import('~icons/mdi/close-circle')['default']
     'Mdi:creditCardEdit': typeof import('~icons/mdi/credit-card-edit')['default']
     'Mdi:loading': typeof import('~icons/mdi/loading')['default']

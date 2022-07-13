@@ -82,6 +82,11 @@ const confirmCropedAvatar = async (data) => {
   isLoading.value = false;
 };
 
+const cancelEdit = () => {
+  isAvatarActive.value = false;
+  isCoverImageActive.value = false;
+};
+
 watch(name, () => {
   if (!name.value) {
     errorMessage.value = '暱稱不得為空';
@@ -133,10 +138,21 @@ onMounted(async () => {
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
     <div class="flex w-full items-center p-3 text-sm sm:text-xl">
-      <button @click="isShowCancelModal = true">
+      <button
+        v-if="!isAvatarActive & !isCoverImageActive"
+        @click="isShowCancelModal = true"
+      >
         <ic:round-close />
       </button>
+      <button
+        v-if="isAvatarActive || isCoverImageActive"
+        type="button"
+        @click="cancelEdit"
+      >
+        <mdi:arrow-left />
+      </button>
       <h2 class="ml-8 font-bold">編輯個人資料</h2>
+
       <p class="ml-auto text-red-600">{{ errorMessage }}</p>
       <button
         v-if="!isCoverImageActive && !isAvatarActive"
