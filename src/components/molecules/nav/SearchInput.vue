@@ -66,9 +66,9 @@ onMounted(async () => {
       <template v-else>
         <li
           v-for="user in filterUsers"
-          :key="user._id"
+          :key="user.id"
           class="flex cursor-pointer items-center px-3 py-2 transition-all duration-200 hover:bg-blue-300/10"
-          @click="goSearching(user._id)"
+          @click="goSearching(user.id)"
         >
           <img :src="user.photo" alt="avatar" class="h-8 w-8 rounded-full" />
           <span class="ml-2">{{ user.name }}</span>

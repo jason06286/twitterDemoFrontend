@@ -89,7 +89,9 @@ const calcLine = () => {
     isTruncate.value = true;
   }
 };
-
+function len(str) {
+  return str.replace(/[^\x00-\xff]/g, 'xx').length;
+}
 const calcWidth = () => {
   if (!contentDom.value) return;
   if (!isTruncate.value) return;
@@ -100,12 +102,27 @@ const calcWidth = () => {
   const style = window.getComputedStyle(contentDom.value, null);
   const fontSize = Number(style['font-size'].replace('px', ''));
   const maxWidth = Number(style.width.replace('px', ''));
-  const row = content.split('\n');
-  const contentLength = row.length >= 3 ? row[1].length : 10000;
-  const position = fontSize * Number(contentLength);
+  const row = content.split(/\n/g);
+  let contentLength = 0;
+
+  if (row.length >= 3) {
+    for (let i = 0; i < row[1].length; i += 1) {
+      const element = row[1][i];
+      if (element.match(/\s/)) {
+        contentLength += 1;
+      } else if (element.match(/[^\x00-\xff]/g)) {
+        contentLength += 4;
+      } else {
+        contentLength += 2;
+      }
+    }
+  } else {
+    contentLength = 10000;
+  }
+  const position = (fontSize / 4) * Number(contentLength);
 
   truncatePosition.value =
-    fontSize * Number(contentLength) >= maxWidth
+    (fontSize / 4) * Number(contentLength) >= maxWidth
       ? `right:0px`
       : `left:${position}px`;
 };
