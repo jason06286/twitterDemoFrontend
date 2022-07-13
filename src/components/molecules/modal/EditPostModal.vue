@@ -28,13 +28,13 @@ watchEffect(() => {
 });
 
 const doUploadFile = async (e) => {
+  errorMsg.value = '';
   isLoading.value = true;
   try {
     const res = await uploadFile(e.target);
     await images.value.push(res.data.data.imgUrl);
   } catch (error) {
     console.error(error);
-    errorMsg.value = error.response.data.message;
   }
   isLoading.value = false;
 };

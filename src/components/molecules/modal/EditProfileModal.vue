@@ -12,12 +12,11 @@ const emit = defineEmits(['init']);
 const toast = useToast();
 const userStore = useUserStore();
 
-const { uploadImg, uploadFile } = useImage();
+const { uploadImg, uploadFile, errorMsg } = useImage();
 
 const cropCoverImage = ref();
 const cropAvatar = ref();
 
-const errorMessage = ref('');
 const name = ref('');
 const description = ref('');
 const coverImage = ref('');
@@ -30,6 +29,7 @@ const isCoverImageActive = ref(false);
 const isAvatarActive = ref(false);
 
 const editCoverImage = async (e) => {
+  errorMsg.value = '';
   isLoading.value = true;
   try {
     const res = await uploadFile(e.target);
@@ -42,6 +42,7 @@ const editCoverImage = async (e) => {
   isLoading.value = false;
 };
 const editAvatar = async (e) => {
+  errorMsg.value = '';
   isLoading.value = true;
   try {
     const res = await uploadFile(e.target);
@@ -89,10 +90,10 @@ const cancelEdit = () => {
 
 watch(name, () => {
   if (!name.value) {
-    errorMessage.value = '暱稱不得為空';
+    errorMsg.value = '暱稱不得為空';
     isDisabled.value = true;
   } else {
-    errorMessage.value = '';
+    errorMsg.value = '';
     isDisabled.value = false;
   }
 });
@@ -102,7 +103,7 @@ const reStart = () => {
   description.value = userStore.user.description;
   coverImage.value = userStore.user.coverImage;
   photo.value = userStore.user.photo;
-  errorMessage.value = '';
+  errorMsg.value = '';
   isCoverImageActive.value = false;
   isAvatarActive.value = false;
   $vfm.hideAll();
@@ -153,7 +154,7 @@ onMounted(async () => {
       </button>
       <h2 class="ml-8 font-bold">編輯個人資料</h2>
 
-      <p class="ml-auto text-red-600">{{ errorMessage }}</p>
+      <p class="ml-auto text-sm text-red-600">{{ errorMsg }}</p>
       <button
         v-if="!isCoverImageActive && !isAvatarActive"
         type="button"
