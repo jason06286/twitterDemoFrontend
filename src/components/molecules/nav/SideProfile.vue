@@ -13,12 +13,11 @@ const followStore = useFollowStore();
 const isShowFollowingModal = ref(false);
 const isShowFollowerModal = ref(false);
 
+const toggleFollow = (id) => {
+  followStore.toggleFollow(id);
+};
 const redirectLink = (url) => {
   router.push(url);
-};
-const judgeFollowing = (id) => {
-  const filter = followStore.following.filter((item) => item.user.id === id);
-  return filter.length;
 };
 </script>
 <template>
@@ -99,82 +98,16 @@ const judgeFollowing = (id) => {
     </div>
   </div>
 
-  <Modal v-model="isShowFollowerModal">
-    <template #title>誰追蹤我</template>
-    <div
-      v-if="!followStore.follower.length"
-      class="flex h-full w-[300px] items-center justify-center text-sm"
-    >
-      還沒有任何人追蹤
-    </div>
-    <template v-else>
-      <div
-        v-for="follow in followStore.follower"
-        :key="follow.id"
-        class="mb-3 flex w-[300px] items-center"
-      >
-        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
-          <img :src="follow.user.photo" alt="avatar" />
-        </div>
-        <div
-          class="cursor-pointer font-bold"
-          @click="redirectLink(`/profile/${follow.user.id}`)"
-        >
-          {{ follow.user.name }}
-        </div>
-        <button
-          v-if="judgeFollowing(follow.user.id)"
-          type="button"
-          class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user.id)"
-        >
-          <span>取消追蹤</span>
-        </button>
-        <button
-          v-else
-          type="button"
-          class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user.id && 'hidden'"
-          @click="followStore.toggleFollow(follow.user.id)"
-        >
-          <span>追蹤</span>
-        </button>
-      </div>
-    </template>
-  </Modal>
-  <Modal v-model="isShowFollowingModal">
-    <template #title>追蹤名單</template>
-    <div
-      v-if="!followStore.following.length"
-      class="flex h-full w-[300px] items-center justify-center text-sm"
-    >
-      尚未追蹤任何人
-    </div>
-    <template v-else>
-      <div
-        v-for="follow in followStore.following"
-        :key="follow.id"
-        class="mb-3 flex w-[300px] items-center"
-      >
-        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
-          <img :src="follow.user.photo" alt="avatar" />
-        </div>
-        <div
-          class="cursor-pointer font-bold"
-          @click="redirectLink(`/profile/${follow.user.id}`)"
-        >
-          {{ follow.user.name }}
-        </div>
-
-        <button
-          type="button"
-          class="cancel-btn ml-auto bg-red-900/50"
-          @click="followStore.toggleFollow(follow.user.id)"
-        >
-          取消追蹤
-        </button>
-      </div>
-    </template>
-  </Modal>
+  <FollwerModal
+    v-model="isShowFollowerModal"
+    :follower="followStore.follower"
+    :following="followStore.following"
+    @toggleFollow="toggleFollow"
+  />
+  <FollowingModal
+    v-model="isShowFollowingModal"
+    :following="followStore.following"
+    @toggleFollow="toggleFollow"
+  />
 </template>
 <style></style>

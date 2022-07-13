@@ -39,10 +39,6 @@ const showEditPostModal = (id) => {
   isShowEditPostModal.value = true;
   $vfm.show(id);
 };
-const redirect = (id) => {
-  $vfm.hideAll();
-  router.push(`/profile/${id}`);
-};
 
 const getProfilePosts = async (id = userProfile.value.user.id) => {
   isLoading.value = true;
@@ -252,87 +248,17 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  <Modal v-model="isShowFollowerModal">
-    <template #title>誰追蹤我</template>
-    <div
-      v-if="!followStore.follower.length"
-      class="flex h-full w-[300px] items-center justify-center text-sm"
-    >
-      還沒有任何人追蹤
-    </div>
-    <template v-else>
-      <div
-        v-for="follow in follower"
-        :key="follow.id"
-        class="mb-3 flex w-[300px] items-center"
-      >
-        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
-          <img :src="follow.user.photo" alt="avatar" />
-        </div>
-        <div class="cursor-pointer font-bold" @click="redirect(follow.user.id)">
-          {{ follow.user.name }}
-        </div>
-        <button
-          v-if="judgeFollowing(follow.user.id)"
-          type="button"
-          class="cancel-btn ml-auto bg-red-900/50"
-          @click="toggleFollow(follow.user.id)"
-        >
-          <span>取消追蹤</span>
-        </button>
-        <button
-          v-else
-          type="button"
-          class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user.id && 'hidden'"
-          @click="toggleFollow(follow.user.id)"
-        >
-          <span>追蹤</span>
-        </button>
-      </div>
-    </template>
-  </Modal>
-  <Modal v-model="isShowFollowingModal">
-    <template #title>追蹤名單</template>
-    <div
-      v-if="!followStore.following.length"
-      class="flex h-full w-[300px] items-center justify-center text-sm"
-    >
-      尚未追蹤任何人
-    </div>
-    <template v-else>
-      <div
-        v-for="follow in following"
-        :key="follow.id"
-        class="mb-3 flex w-[300px] items-center"
-      >
-        <div class="mr-3 h-10 w-10 overflow-hidden rounded-full">
-          <img :src="follow.user.photo" alt="avatar" />
-        </div>
-        <div class="cursor-pointer font-bold" @click="redirect(follow.user.id)">
-          {{ follow.user.name }}
-        </div>
-
-        <button
-          v-if="judgeFollowing(follow.user.id)"
-          type="button"
-          class="cancel-btn ml-auto bg-red-900/50"
-          @click="toggleFollow(follow.user.id)"
-        >
-          <span>取消追蹤</span>
-        </button>
-        <button
-          v-else
-          type="button"
-          class="confirm-btn ml-auto"
-          :class="userStore.user.id === follow.user.id && 'hidden'"
-          @click="toggleFollow(follow.user.id)"
-        >
-          <span>追蹤</span>
-        </button>
-      </div>
-    </template>
-  </Modal>
+  <FollwerModal
+    v-model="isShowFollowerModal"
+    :follower="follower"
+    :following="following"
+    @toggleFollow="toggleFollow"
+  />
+  <FollowingModal
+    v-model="isShowFollowingModal"
+    :following="following"
+    @toggleFollow="toggleFollow"
+  />
   <PublishPostModal v-model="isShowAddPostModal" @publish="init">
   </PublishPostModal>
   <template v-for="post in profilePostsStore?.posts">
@@ -347,8 +273,4 @@ onMounted(async () => {
   <ResetPasswordModal v-model="isShowResetPasswordModal" />
   <EditProfileModal v-model="isShowEditProfileModal" @init="init" />
 </template>
-<style scoped>
-.bg-ig {
-  background-image: linear-gradient(45deg, #8baaaa 0%, #ae8b9c 100%);
-}
-</style>
+<style></style>
