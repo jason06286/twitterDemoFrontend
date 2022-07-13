@@ -132,9 +132,9 @@ onUnmounted(() => {
             class="hidden"
             @change="doUploadFile($event)"
           />
-          <p class="text-sm text-red-800 sm:text-xl">{{ errorMsg }}</p>
+          <p class="ml-3 text-sm text-red-800 xl:text-base">{{ errorMsg }}</p>
           <button
-            class="confirm-btn disabled:bg-gray-400"
+            class="confirm-btn flex-shrink-0 disabled:bg-gray-400"
             :disabled="isLoading"
             @click="publishPost"
           >
