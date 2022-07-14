@@ -1,35 +1,48 @@
-# vue-project
+# twitterShare
+## [API 文件](https://fast-tundra-64548.herokuapp.com/api-doc/#/)
+## [後端 repo](https://github.com/jason06286/twitterDemoBackend)
 
-This template should help get you started developing with Vue 3 in Vite.
+## 使用技術
 
-## Recommended IDE Setup
+這次使用 vite 做開發， UI框架使用 Tailwind
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+使用 Pinia 做狀態管理，取代原本 provide inject
 
-## Customize configuration
+使用 compensation api 做邏輯拆分
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Coding Style
+* ESLint-Airbnb
+* Vue 3 Script Setup
+* Vue SFC (由上而下排列)
+  - script: `<script setup>`
+  - template: `<template>`
+  - style: `<style scoped>`
+## Vite 插件功能
+* src/components
+   - 此資料夾下的 Component 可以在任何 .vue 檔案中直接使用不需用 import。
+   - https://github.com/antfu/vite-plugin-components
+* import 自動導入
+   - 系統會自動偵測  `.vue.js.ts` 檔，並引入 `vue、vue router、Pinia`
+   - https://github.com/antfu/unplugin-auto-import
+* Icon 自動導入
+   - 只要進入這個網站
+   - https://icones.netlify.app/
+   - 選擇你要的 icon 然後直接以 components 的方式使用，比如說：`<mdi:menu />`
+   - Vite 就會自動導入對應的 svg
+   - 調整顏色大小（配合Tailwind）
+   - 顏色：`text-white`
+   - 大小：`text-xl`
+   - https://github.com/antfu/vite-plugin-icons
+## 開發
 
-## Project Setup
-
-```sh
+```
+# install deps
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# run dev server
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
+# run build
 npm run build
-```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
