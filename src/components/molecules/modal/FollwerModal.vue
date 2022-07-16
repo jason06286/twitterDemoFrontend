@@ -1,6 +1,7 @@
 <script setup>
 import { VueFinalModal, $vfm } from 'vue-final-modal';
 import useUserStore from '@/stores/user';
+import useFollowStore from '@/stores/follow';
 
 const props = defineProps({
   follower: {
@@ -13,12 +14,17 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
+  isAdmin: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emit = defineEmits(['toggleFollow']);
 
 const router = useRouter();
 
 const userStore = useUserStore();
+const followStore = useFollowStore();
 
 const redirect = (id) => {
   $vfm.hideAll();
@@ -26,7 +32,11 @@ const redirect = (id) => {
 };
 
 const judgeFollowing = (id) => {
-  const filter = props.following.filter((item) => item.user.id === id);
+  if (props.isAdmin) {
+    const filter = props.following.filter((item) => item.user.id === id);
+    return filter.length;
+  }
+  const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
 };
 </script>
@@ -67,6 +77,7 @@ const judgeFollowing = (id) => {
             v-if="judgeFollowing(follow.user.id)"
             type="button"
             class="cancel-btn ml-auto bg-red-900/50"
+            :class="userStore.user.id === follow.user.id && 'hidden'"
             @click="emit('toggleFollow', follow.user.id)"
           >
             <span>取消追蹤</span>

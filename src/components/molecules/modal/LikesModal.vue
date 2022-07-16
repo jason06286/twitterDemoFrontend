@@ -7,22 +7,34 @@ import useFollowStore from '@/stores/follow';
 import useLike from '@/methods/useLike';
 
 const props = defineProps({
-  post: {
-    type: Object,
+  id: {
+    type: String,
+    required: true,
+  },
+  likes: {
+    type: Array,
     required: true,
   },
 });
-const likes = ref([]);
-const { getLikes } = useLike();
 
-watchEffect(async () => {
-  const res = await getLikes(props.post.id);
-  likes.value = res;
-});
+const router = useRouter();
+
+const { getLikes } = useLike();
 
 const userStore = useUserStore();
 const followStore = useFollowStore();
 
+const likes = ref([]);
+
+watchEffect(async () => {
+  likes.value = props.likes;
+  const res = await getLikes(props.id);
+  likes.value = res;
+});
+
+const redirectLink = (url) => {
+  router.push(url);
+};
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
@@ -33,7 +45,7 @@ const judgeFollowing = (id) => {
     v-slot="{ close }"
     :esc-to-close="true"
     v-bind="$attrs"
-    :name="props.post.id"
+    :name="props.id"
     classes="flex justify-center items-center text-gray-300"
     content-class="relative flex flex-col max-h-full mx-4 p-4 border border-gray-800 rounded bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"

@@ -6,7 +6,7 @@ import useUserStore from '@/stores/user';
 import { formatTime, formatContent } from '@/methods/format';
 import useLike from '@/methods/useLike';
 
-import { apiSharePost, apiDeletePost } from '@/api/api';
+import { apiSharePost, apiDeletePost, apiToggleLikes } from '@/api/api';
 
 const props = defineProps({
   isAdmin: {
@@ -19,7 +19,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['init', 'showEditPostModal']);
+const emit = defineEmits(['init']);
 
 const toast = useToast();
 
@@ -28,7 +28,8 @@ const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
-const { getLikes, toggleLikes } = useLike();
+const { getLikes } = useLike();
+
 const likes = ref([]);
 
 const imgModal = ref();
@@ -42,6 +43,7 @@ const droupActive = ref(false);
 const isShowLikeModal = ref(false);
 const isShowShareModal = ref(false);
 const isShowDeletePostModal = ref(false);
+const isShowEditPostModal = ref(false);
 
 const truncatePosition = ref('');
 
@@ -150,13 +152,20 @@ const sharePost = async () => {
     });
   }
 };
+
+const toggleLikes = async (id) => {
+  await apiToggleLikes(id);
+  const res = await getLikes(props.post.id);
+  likes.value = res;
+};
+
 const deletePost = async () => {
   await apiDeletePost(props.post.id);
   emit('init');
 };
-const showEditPostModal = () => {
+const editPost = () => {
   droupActive.value = !droupActive.value;
-  emit('showEditPostModal', props.post.id);
+  emit('init');
 };
 
 const showDeletePostModal = () => {
@@ -231,7 +240,7 @@ onUnmounted(() => {
           <li
             v-if="!props.post.share"
             class="flex cursor-pointer items-center border-b border-gray-500 px-3 py-2 hover:bg-blue-800 hover:text-blue-300"
-            @click="showEditPostModal"
+            @click="isShowEditPostModal = true"
           >
             <ic:round-edit class="mr-2" /> 編輯貼文
           </li>
@@ -413,7 +422,7 @@ onUnmounted(() => {
     <Comment ref="comment" :post="props.post" />
   </div>
 
-  <LikesModal v-model="isShowLikeModal" :post="props.post" />
+  <LikesModal :id="props.post.id" v-model="isShowLikeModal" :likes="likes" />
   <SharePostModal
     v-model="isShowShareModal"
     :title="'分享貼文'"
@@ -463,6 +472,13 @@ onUnmounted(() => {
     <template #confirm>分享貼文</template>
   </SharePostModal>
   <DeletePostModal v-model="isShowDeletePostModal" @confirm="deletePost" />
+  <EditPostModal
+    v-if="!props.post.share"
+    v-model="isShowEditPostModal"
+    :post="props.post"
+    @edit-post="editPost"
+  >
+  </EditPostModal>
   <template v-if="props.post.share">
     <ImageModal
       v-if="props.post?.share?.images?.length"

@@ -11,15 +11,14 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(['confirm']);
+const emit = defineEmits(['editPost']);
 
 const userStore = useUserStore();
 
 const { images, errorMsg, uploadFile, deleteImage } = useImage();
 
-const isShowEditPostModal = ref(false);
-const isShowCancelModal = ref(false);
 const content = ref('');
+const isShowCancelModal = ref(false);
 const isLoading = ref(false);
 
 watchEffect(() => {
@@ -45,7 +44,7 @@ const reStart = () => {
   errorMsg.value = '';
   $vfm.hideAll();
 };
-const publishPost = async () => {
+const editPost = async () => {
   errorMsg.value = '';
   if (content.value === '' && !images.value.length) {
     return (errorMsg.value = '請輸入貼文內容或上傳一張圖片');
@@ -55,9 +54,8 @@ const publishPost = async () => {
       content: content.value,
       images: images.value,
     });
-    emit('confirm');
+    emit('editPost');
     reStart();
-    $vfm.hideAll();
   } catch (error) {
     console.error(error);
   }
@@ -66,7 +64,6 @@ const publishPost = async () => {
 <template>
   <vue-final-modal
     v-bind="$attrs"
-    v-model="isShowEditPostModal"
     :click-to-close="false"
     :name="props.post.id"
     classes="flex justify-center items-center text-gray-300 rounded-lg"
@@ -141,7 +138,7 @@ const publishPost = async () => {
           <button
             class="confirm-btn shrink-0 disabled:bg-gray-400"
             :disabled="isLoading"
-            @click="publishPost"
+            @click="editPost"
           >
             編輯貼文
           </button>

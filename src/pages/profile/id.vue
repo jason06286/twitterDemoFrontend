@@ -1,6 +1,4 @@
 <script setup>
-import { $vfm } from 'vue-final-modal';
-
 import useProfilePostsStore from '@/stores/profilePosts';
 import useFollowStore from '@/stores/follow';
 import useUserStore from '@/stores/user';
@@ -19,12 +17,8 @@ const following = ref([]);
 const follower = ref([]);
 const isLoading = ref(false);
 const isAdmin = computed(() => route.params.id === userStore.user.id);
-const coverImage = computed(() =>
-  isAdmin ? userStore.user.coverImage : userProfile.coverImage
-);
 
 const isShowAddPostModal = ref(false);
-const isShowEditPostModal = ref(false);
 const isShowFollowingModal = ref(false);
 const isShowFollowerModal = ref(false);
 const isShowResetPasswordModal = ref(false);
@@ -33,10 +27,6 @@ const isShowEditProfileModal = ref(false);
 const judgeFollowing = (id) => {
   const filter = followStore.following.filter((item) => item.user.id === id);
   return filter.length;
-};
-const showEditPostModal = (id) => {
-  isShowEditPostModal.value = true;
-  $vfm.show(id);
 };
 
 const getProfilePosts = async (id = userProfile.value.user.id) => {
@@ -93,13 +83,13 @@ onMounted(async () => {
   <div
     class="relative h-auto bg-cover bg-center shadow-md before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/50 before:via-black/90 before:to-black sm:mt-[48px]"
     :style="{
-      backgroundImage: 'url(' + coverImage + ')',
+      backgroundImage: 'url(' + userProfile.coverImage + ')',
     }"
   >
     <div class="container m-auto">
       <div
         :style="{
-          backgroundImage: 'url(' + coverImage + ')',
+          backgroundImage: 'url(' + userProfile.coverImage + ')',
         }"
         class="relative h-[150px] w-full bg-cover bg-center before:absolute before:inset-0 before:bg-black/10 sm:h-[300px] lg:h-[400px]"
       ></div>
@@ -174,7 +164,7 @@ onMounted(async () => {
             v-if="!judgeFollowing(route.params.id)"
             type="button"
             class="confirm-btn bg-blue-900/50"
-            @click="followStore.toggleFollow(route.params.id)"
+            @click="toggleFollow(route.params.id)"
           >
             追蹤起來
           </button>
@@ -182,7 +172,7 @@ onMounted(async () => {
             v-else
             type="button"
             class="cancel-btn bg-red-900/50"
-            @click="followStore.toggleFollow(route.params.id)"
+            @click="toggleFollow(route.params.id)"
           >
             取消追蹤
           </button>
@@ -242,7 +232,6 @@ onMounted(async () => {
           :post="post"
           :is-admin="isAdmin"
           @init="init"
-          @showEditPostModal="showEditPostModal"
         />
       </div>
     </div>
@@ -251,24 +240,17 @@ onMounted(async () => {
     v-model="isShowFollowerModal"
     :follower="follower"
     :following="following"
+    :is-admin="false"
     @toggleFollow="toggleFollow"
   />
   <FollowingModal
     v-model="isShowFollowingModal"
     :following="following"
+    :is-admin="false"
     @toggleFollow="toggleFollow"
   />
   <PublishPostModal v-model="isShowAddPostModal" @publish="init">
   </PublishPostModal>
-  <template v-for="post in profilePostsStore?.posts">
-    <EditPostModal
-      v-if="!post.share"
-      :key="post.id"
-      :post="post"
-      @confirm="getProfilePosts"
-    >
-    </EditPostModal>
-  </template>
   <ResetPasswordModal v-model="isShowResetPasswordModal" />
   <EditProfileModal
     v-if="userStore.user.id"
