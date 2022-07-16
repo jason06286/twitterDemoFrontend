@@ -48,8 +48,12 @@ const isShowEditPostModal = ref(false);
 const truncatePosition = ref('');
 
 const isLike = computed(() => {
-  const filter = likes.value.filter((item) => item.id === userStore.user.id);
-  return filter.length;
+  if (!likes.value.length) return false;
+  if (likes.value[0].name !== undefined) {
+    const filter = likes.value.filter((item) => item.id === userStore.user.id);
+    return filter.length > 0;
+  }
+  return likes.value.includes(userStore.user.id);
 });
 
 const imagesClass = computed(() => {
