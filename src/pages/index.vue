@@ -58,9 +58,11 @@ onMounted(async () => {
   <Loading :is-loading="isLoading" />
   <Navbar />
   <div class="container m-auto mt-0 mb-14 sm:mt-14 sm:mb-0">
-    <div class="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4">
-      <div class="hidden 2xl:block"></div>
-      <div class="col-auto ml-0 sm:mt-8 lg:col-span-2 lg:ml-5 2xl:ml-0">
+    <div class="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-4">
+      <div class="hidden lg:block"></div>
+      <div
+        class="col-auto ml-0 sm:mt-8 lg:col-span-3 xl:col-span-5 2xl:col-span-2 2xl:ml-0"
+      >
         <div class="mb-5 flex items-center rounded-md bg-black px-5 py-3">
           <div
             class="mr-3 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full md:h-12 md:w-12"
