@@ -18,7 +18,7 @@ const logout = () => {
 <template>
   <nav class="fixed left-0 right-0 top-0 z-10 hidden bg-black py-1 sm:block">
     <div
-      class="container m-auto flex items-center justify-between px-1 sm:px-0"
+      class="container m-auto flex items-center justify-between px-3 xl:px-0"
     >
       <div
         class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:bg-blue-300/20"

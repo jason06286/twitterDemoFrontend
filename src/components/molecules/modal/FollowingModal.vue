@@ -81,7 +81,7 @@ const judgeFollowing = (id) => {
           <button
             v-else
             type="button"
-            class="confirm-btn ml-auto"
+            class="confirm-btn ml-auto bg-blue-900/50"
             :class="userStore.user.id === follow.user.id && 'hidden'"
             @click="emit('toggleFollow', follow.user.id)"
           >
