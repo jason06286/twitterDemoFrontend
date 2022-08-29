@@ -20,7 +20,6 @@ const checkStatus = async () => {
       /(?:(?:^|.*;\s*)twitterToken\s*=\s*([^;]*).*$)|^.*$/,
       '$1'
     );
-    console.log('token :>> ', token);
     if (!token) return router.push('/login');
     setToken();
     const res = await apiCheckStatus();

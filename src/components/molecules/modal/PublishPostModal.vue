@@ -68,7 +68,7 @@ onUnmounted(() => {
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
     <button class="mb-3" @click="isShowCancelModal = true">
-      <mdi-close class="text-xl"></mdi-close>
+      <mdi:close-circle class="cursor-pointer text-xl hover:text-red-400" />
     </button>
     <div class="flex w-[300px] p-1 sm:w-[500px]">
       <div class="mr-2 h-12 w-12 shrink-0 overflow-hidden rounded-full">
