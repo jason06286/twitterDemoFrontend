@@ -26,7 +26,7 @@ export default function useImage() {
       return res;
     } catch (error) {
       errorMsg.value = error.response.data.message;
-      console.log(error);
+      console.error(error);
     }
   };
 
