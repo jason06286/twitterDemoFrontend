@@ -286,7 +286,7 @@ onMounted(async () => {
     v-model="isShowCancelModal"
     :esc-to-close="true"
     classes="flex justify-center items-center text-gray-300"
-    content-class="relative flex flex-col max-h-full mx-4 p-4 border dark:border-gray-800 rounded bg-white dark:bg-black"
+    content-class="relative flex flex-col max-h-full mx-4 p-4 border border-gray-800 rounded bg-black"
     :overlay-style="['background-color: rgba(91, 112, 131, 0.4)']"
   >
     <span class="mr-8 text-center text-xl font-bold">
