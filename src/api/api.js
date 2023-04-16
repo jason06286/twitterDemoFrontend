@@ -9,15 +9,14 @@ export const setToken = () => {
   );
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   baseRequest = axios.create({
-    baseURL: `https://fast-tundra-64548.herokuapp.com/api/`,
+    baseURL: `https://twiiter-backend.onrender.com/api/`,
   });
 };
 baseRequest = axios.create({
-  baseURL: `https://fast-tundra-64548.herokuapp.com/api/`,
+  baseURL: `https://twiiter-backend.onrender.com/api/`,
 });
 export const apiGoogle = () => {
-  window.location.href =
-    'https://fast-tundra-64548.herokuapp.com/api/auth/google';
+  window.location.href = 'https://twiiter-backend.onrender.com/api/auth/google';
 };
 
 export const apiCheckStatus = () => baseRequest.get('user/check');
@@ -30,7 +29,7 @@ const token = document.cookie.replace(
 );
 axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 baseRequest = axios.create({
-  baseURL: `https://fast-tundra-64548.herokuapp.com/api/`,
+  baseURL: `https://twiiter-backend.onrender.com/api/`,
 });
 
 export const apiGetUsers = () => baseRequest.get('user');
